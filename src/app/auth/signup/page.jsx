@@ -16,7 +16,7 @@ import {
   FaPhoneAlt 
 } from 'react-icons/fa';
 
-import { signUp } from '@/lib/auth-client'; // আপনার প্রজেক্টের পাথ অনুযায়ী ঠিক করে নিবেন
+import { authClient, signUp } from '@/lib/auth-client'; 
 
 export default function GymSignupPage() {
   const router = useRouter();
@@ -116,7 +116,7 @@ export default function GymSignupPage() {
 
     try {
       // API Call with ImgBB Live URL
-      const { data, error: authError } = await signUp.email({
+      const { data, error: authError } = await authClient.signUp.email({
         email: formData.email,
         password: formData.password,
         name: formData.fullName,

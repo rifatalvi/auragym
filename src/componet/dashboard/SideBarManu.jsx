@@ -75,7 +75,7 @@ export default function SideBarManu() {
 
   return (
     <aside
-      className={`border-r border-gray-200 dark:border-white/[0.08] bg-gray-50/30 dark:bg-[#0a0007]/50 flex flex-col h-screen sticky top-0 font-sans transition-all duration-300 ease-in-out ${
+      className={`border-r border-gray-200 dark:border-white/[0.08] bg-gray-50/30 dark:bg-[#0a0007]/50 flex flex-col h-screen sticky top-0 z-50 font-sans transition-all duration-300 ease-in-out ${
         isCollapsed ? "w-16" : "w-64"
       }`}
     >
@@ -89,28 +89,30 @@ export default function SideBarManu() {
       </button>
 
       {/* ── Header / Brand ── */}
-      <div className={`h-14 flex items-center mt-2 mb-2 ${isCollapsed ? "px-3" : "px-4"}`}>
+      <div className={`h-16 flex items-center mt-1 mb-1 ${isCollapsed ? "px-2" : "px-4"}`}>
         <Link
           href="/"
-          className={`flex items-center gap-2 group w-full rounded-md py-1.5 hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-colors ${
+          className={`flex items-center gap-3 group w-full rounded-lg py-2 hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-colors ${
             isCollapsed ? "justify-center px-1" : "px-2"
           }`}
         >
-          <div className="relative w-7 h-7 flex-shrink-0 bg-white dark:bg-white/[0.05] rounded shadow-sm border border-gray-200 dark:border-white/[0.08] flex items-center justify-center p-1">
+          <div className={`relative flex-shrink-0 bg-white dark:bg-white/[0.05] rounded-lg shadow-md border border-gray-200 dark:border-white/[0.10] flex items-center justify-center transition-all duration-300 ${
+            isCollapsed ? "w-9 h-9 p-1.5" : "w-10 h-10 p-1.5"
+          }`}>
             <Image
               src="/logo-ag.png"
               alt="AuraGym"
               fill
-              className="object-contain mix-blend-multiply dark:mix-blend-screen dark:invert p-1"
+              className="object-contain mix-blend-multiply dark:mix-blend-screen dark:invert p-1.5"
               style={{ filter: "contrast(1.2)" }}
             />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300">
-              <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">
+              <span className="text-base font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
                 Aura<span className="text-red-700 dark:text-rose-500">Gym</span>
               </span>
-              <span className="text-[10px] text-gray-500 dark:text-gray-400 capitalize mt-0.5">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400 capitalize mt-0.5 font-medium">
                 {userRole} Portal
               </span>
             </div>
@@ -158,10 +160,10 @@ export default function SideBarManu() {
 
                   {/* Custom Tooltip for Collapsed State */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold rounded shadow-lg opacity-0 pointer-events-none group-hover/link:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap flex items-center">
+                    <div className="absolute left-full ml-3 px-3 py-1.5 bg-black dark:bg-[#1a0016] text-white text-xs font-bold rounded-lg shadow-xl border border-transparent dark:border-white/[0.08] opacity-0 pointer-events-none group-hover/link:opacity-100 translate-x-1 group-hover/link:translate-x-0 transition-all duration-200 z-[100] whitespace-nowrap flex items-center">
                       {item.label}
                       {/* Tooltip Arrow */}
-                      <div className="absolute top-1/2 -translate-y-1/2 -left-1 w-0 h-0 border-y-[4px] border-y-transparent border-r-[4px] border-r-gray-900 dark:border-r-white"></div>
+                      <div className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-0 h-0 border-y-[6px] border-y-transparent border-r-[6px] border-r-black dark:border-r-[#1a0016]"></div>
                     </div>
                   )}
                 </Link>

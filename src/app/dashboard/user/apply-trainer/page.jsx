@@ -182,6 +182,27 @@ export default function ApplyAsTrainer() {
               </div>
             )}
 
+            {/* Re-apply section */}
+            {isRejected && (
+              <div className="mt-6">
+                {existingApp.canReapply ? (
+                  <button
+                    onClick={() => {
+                      setExistingApp(null);
+                      setForm({ experience: "", specialty: "", bio: "" });
+                    }}
+                    className="w-full py-3 rounded-xl bg-red-700 hover:bg-red-800 dark:bg-red-700 dark:hover:bg-red-600 text-white font-bold transition-all shadow-md"
+                  >
+                    Re-apply Now
+                  </button>
+                ) : (
+                  <div className="w-full p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] text-sm text-gray-600 dark:text-gray-400 font-semibold text-center">
+                    You can re-apply in {existingApp.timeLeft} minutes
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Go to dashboard */}
             <button
               onClick={() => router.push("/dashboard/user")}

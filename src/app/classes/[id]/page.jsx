@@ -86,7 +86,7 @@ export default function ClassDetailsPage() {
       if (!res.ok) throw new Error("Failed to toggle favorite");
       const data = await res.json();
       setIsFavorited(data.isFavorited);
-      showMessage(data.isFavorited ? "Saved to favorites" : "Removed from favorites", "success");
+      showMessage(data.isFavorited ? "Successfully added to your favorites!" : "Successfully removed from your favorites!", "success");
     } catch {
       showMessage("Something went wrong.", "error");
     } finally {

@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "@/lib/auth-client";
-import { 
-  Clock, Flame, Activity, DollarSign, CalendarDays, 
-  User, Heart, Dumbbell, Zap, ArrowRight, Loader2, Bookmark, ArrowLeft
+import {
+  Clock, Flame, Zap, ArrowRight, Loader2, Heart, ArrowLeft,
+  Calendar, MapPin, Plus, Check
 } from "lucide-react";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export default function ClassDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  
+
   const [cls, setCls] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBooked, setIsBooked] = useState(false);
@@ -51,21 +51,12 @@ export default function ClassDetailsPage() {
           fetch(`http://localhost:5000/api/bookings/check?classId=${id}&userId=${session.user.id}`),
           fetch(`http://localhost:5000/api/favorites/check?classId=${id}&userId=${session.user.id}`)
         ]);
-        
-        if (bookingRes.ok) {
-          const bookingData = await bookingRes.json();
-          setIsBooked(bookingData.isBooked);
-        }
-        
-        if (favRes.ok) {
-          const favData = await favRes.json();
-          setIsFavorited(favData.isFavorited);
-        }
+        if (bookingRes.ok) setIsBooked((await bookingRes.json()).isBooked);
+        if (favRes.ok) setIsFavorited((await favRes.json()).isFavorited);
       } catch (err) {
         console.error("Error fetching user status:", err);
       }
     };
-    
     fetchUserStatus();
   }, [id, session?.user?.id]);
 
@@ -75,10 +66,7 @@ export default function ClassDetailsPage() {
       setTimeout(() => router.push("/auth/signup"), 1500);
       return;
     }
-    if (isBooked) {
-      showMessage("You have already booked this class.", "error");
-      return;
-    }
+    if (isBooked) { showMessage("You have already booked this class.", "error"); return; }
     router.push(`/classes/${id}/payment`);
   };
 
@@ -88,7 +76,6 @@ export default function ClassDetailsPage() {
       setTimeout(() => router.push("/auth/signup"), 1500);
       return;
     }
-    
     setActionLoading(true);
     try {
       const res = await fetch("http://localhost:5000/api/favorites/toggle", {
@@ -96,214 +83,339 @@ export default function ClassDetailsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId: id, userId: session.user.id })
       });
-      
       if (!res.ok) throw new Error("Failed to toggle favorite");
-      
       const data = await res.json();
       setIsFavorited(data.isFavorited);
-      showMessage(data.isFavorited ? "Saved to Favorites" : "Removed from Favorites", "success");
-    } catch (err) {
-      console.error(err);
+      showMessage(data.isFavorited ? "Saved to favorites" : "Removed from favorites", "success");
+    } catch {
       showMessage("Something went wrong.", "error");
     } finally {
       setActionLoading(false);
     }
   };
 
+  // ── Loading ─────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0007] flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-red-700 dark:text-rose-400 animate-spin" />
+      <div className="min-h-screen bg-white dark:bg-[#0B0B0D] flex items-center justify-center pt-16">
+        <Loader2 className="w-10 h-10 text-red-600 dark:text-[#C8102E] animate-spin" />
       </div>
     );
   }
 
+  // ── Not found ───────────────────────────────────────────────────────────────
   if (!cls) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0007] flex flex-col items-center justify-center p-6 text-center">
-        <Dumbbell className="w-16 h-16 text-gray-400 mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Class Not Found</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-6">The class you're looking for doesn't exist.</p>
-        <Link href="/classes" className="px-6 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors">
-          Browse Classes
+      <div className="min-h-screen bg-white dark:bg-[#0B0B0D] flex flex-col items-center justify-center p-6 text-center pt-16">
+        <p className="text-gray-400 dark:text-[#8A8A8E] font-mono text-sm uppercase tracking-widest mb-3">404 / not found</p>
+        <h1 className="text-3xl font-black uppercase text-gray-900 dark:text-[#EDEAE3] mb-2">Class not found</h1>
+        <p className="text-gray-500 dark:text-[#8A8A8E] mb-6 max-w-sm">This session doesn&apos;t exist or has been removed from the schedule.</p>
+        <Link href="/classes" className="px-6 py-3 rounded-lg bg-red-700 dark:bg-[#C8102E] text-white font-bold uppercase tracking-wider text-sm hover:bg-red-800 dark:hover:bg-[#a30d25] transition-colors">
+          Browse classes
         </Link>
       </div>
     );
   }
 
+  const plates = [
+    { label: "Duration",  value: cls.duration || "60 min",              icon: Clock,  weight: 25 },
+    { label: "Intensity", value: cls.intensity || cls.level || "All levels", icon: Zap, weight: 35 },
+    { label: "Est. burn", value: cls.caloriesBurn || "500 cal",         icon: Flame,  weight: 45 },
+  ];
+  const days = cls.schedule?.days || [];
+  const time = cls.schedule?.time || "TBA";
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0007] pb-24 font-sans text-gray-900 dark:text-gray-100">
-      {/* Toast Message */}
-      {message.text && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50">
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            className={`px-6 py-3 rounded-full shadow-lg font-bold text-sm text-white ${message.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}
+    <div className="min-h-screen bg-white dark:bg-[#0B0B0D] text-gray-900 dark:text-[#EDEAE3] pb-24 pt-16 transition-colors duration-300">
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700;900&family=Roboto+Mono:wght@400;500&display=swap');
+        .display { font-family: 'Oswald', sans-serif; }
+        .mono    { font-family: 'Roboto Mono', monospace; }
+        .plate-card { transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease; }
+        .plate-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px -8px rgba(200,16,46,0.35); }
+        .book-btn { transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease, background-color 0.25s ease; }
+        .book-btn:not(:disabled):hover  { transform: translateY(-2px); box-shadow: 0 10px 24px -6px rgba(200,16,46,0.45); }
+        .book-btn:not(:disabled):active { transform: translateY(0); }
+        .fav-btn { transition: transform 0.2s ease, border-color 0.25s ease, background-color 0.25s ease; }
+        .fav-btn:not(:disabled):hover  { transform: translateY(-1px); }
+        .fav-btn:not(:disabled):active { transform: scale(0.98); }
+        @media (prefers-reduced-motion: reduce) {
+          .plate-card, .book-btn, .fav-btn { transition: none !important; }
+        }
+      `}</style>
+
+      {/* ── Toast ── */}
+      <AnimatePresence>
+        {message.text && (
+          <motion.div
+            initial={{ opacity: 0, y: -16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
           >
-            {message.text}
-          </motion.div>
-        </div>
-      )}
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-12">
-        {/* Breadcrumb / Back Link */}
-        <Link href="/classes" className="inline-flex items-center gap-2 text-sm font-semibold text-red-700 dark:text-rose-400 hover:text-orange-600 transition-colors mb-6">
-          <ArrowLeft className="w-4 h-4" /> Back to Classes
-        </Link>
-
-        {/* Title & Badge */}
-        <div className="mb-8">
-          <div className="inline-block px-3 py-1 mb-4 text-[10px] font-black tracking-widest uppercase bg-red-700/10 text-red-700 dark:text-rose-400 rounded-full border border-orange-500/20">
-            {cls.category}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
-            {cls.className || cls.name}
-          </h1>
-        </div>
-
-        {/* Main Image */}
-        <div className="w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden mb-12 shadow-2xl relative">
-          <img 
-            src={cls.image || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200"} 
-            alt={cls.className || cls.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
-          {/* ─── LEFT COLUMN: Details ─── */}
-          <div className="lg:col-span-2 space-y-12">
-            
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[
-                { icon: Clock, label: "Duration", value: cls.duration || "60 min" },
-                { icon: Zap, label: "Level", value: cls.intensity || cls.level || "All Levels" },
-                { icon: Activity, label: "Focus", value: cls.focus || "Full Body" },
-                { icon: Flame, label: "Est. Burn", value: cls.caloriesBurn || "500 cal" },
-                { icon: CalendarDays, label: "Schedule", value: (cls.schedule?.days || ["Mon", "Wed"]).join(", ") },
-                { icon: User, label: "Status", value: cls.status || "Open", highlight: true }
-              ].map((stat, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-white dark:bg-[#0e0005] border border-gray-200 dark:border-white/[0.05] flex gap-3 items-center">
-                  <div className="w-10 h-10 rounded-full bg-red-700/10 flex items-center justify-center flex-shrink-0">
-                    <stat.icon className="w-5 h-5 text-red-700 dark:text-rose-400" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">{stat.label}</p>
-                    <p className={`text-sm font-bold ${stat.highlight ? 'text-green-500' : 'text-gray-900 dark:text-white'}`}>
-                      {stat.value}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className={`px-5 py-3 rounded-lg font-semibold text-sm text-white border-l-4 shadow-lg ${
+              message.type === "error"
+                ? "bg-gray-900 dark:bg-[#1C1C1F] border-red-600"
+                : "bg-gray-900 dark:bg-[#1C1C1F] border-yellow-500"
+            }`}>
+              {message.text}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {/* About Class */}
+      {/* ── Header strip ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="border-b border-gray-200 dark:border-white/10"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+          <Link
+            href="/classes"
+            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-[#8A8A8E] hover:text-gray-900 dark:hover:text-[#EDEAE3] mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Schedule
+          </Link>
+
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-1.5 h-6 bg-red-700 rounded-full" />
-                <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">About This Class</h2>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="mono text-xs text-yellow-600 dark:text-[#D4AF37] tracking-widest">
+                  {String(cls.bookingCount ?? 0).padStart(3, "0")} LIFTERS BOOKED
+                </span>
+                <span className="w-1 h-1 rounded-full bg-gray-400 dark:bg-[#8A8A8E]" />
+                <span className="mono text-xs text-gray-500 dark:text-[#8A8A8E] tracking-widest uppercase">{cls.category}</span>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              <h1 className="display text-4xl sm:text-6xl font-black uppercase tracking-tight leading-[0.95] text-gray-900 dark:text-[#EDEAE3]">
+                {cls.className || cls.name}
+              </h1>
+            </div>
+            <div className="hidden sm:flex flex-col items-end mono text-xs text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">
+              <span>Status</span>
+              <span className={`text-sm font-medium ${cls.status === "Open" ? "text-yellow-600 dark:text-[#D4AF37]" : "text-gray-500 dark:text-[#8A8A8E]"}`}>
+                {cls.status || "Open"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Body ── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+          {/* ─── LEFT ─── */}
+          <div className="lg:col-span-2 space-y-14">
+
+            {/* Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.985 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full h-[340px] sm:h-[440px] overflow-hidden rounded-xl border border-gray-100 dark:border-white/[0.06] shadow-lg dark:shadow-none"
+            >
+              <img
+                src={cls.image || "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200"}
+                alt={cls.className || cls.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent dark:from-[#0B0B0D] dark:via-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-red-700 dark:bg-[#C8102E]" />
+            </motion.div>
+
+            {/* Loadout bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-baseline justify-between mb-6">
+                <h2 className="display text-lg font-bold uppercase tracking-wide text-gray-900 dark:text-[#EDEAE3]">The loadout</h2>
+                <span className="mono text-[11px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">What you&apos;re lifting today</span>
+              </div>
+
+              <div className="relative py-10 px-4 overflow-x-auto">
+                {/* bar */}
+                <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-[6px] bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 dark:from-[#3a3a3e] dark:via-[#5a5a5e] dark:to-[#3a3a3e] rounded-full" />
+
+                <div className="relative flex items-center justify-center gap-6 sm:gap-10 min-w-max mx-auto">
+                  {/* left collar */}
+                  <div className="w-3 h-10 bg-gray-300 dark:bg-[#2c2c2f] rounded-sm flex-shrink-0" />
+
+                  {plates.map((p, i) => {
+                    const size = 96 + p.weight * 1.4;
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.45, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex flex-col items-center gap-3 flex-shrink-0"
+                      >
+                        <div
+                          className="plate-card rounded-full border-[3px] border-red-700 dark:border-[#C8102E] bg-gray-100 dark:bg-[#1C1C1F] flex flex-col items-center justify-center shadow-md dark:shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] cursor-default"
+                          style={{ width: size, height: size }}
+                        >
+                          <p.icon className="w-5 h-5 text-yellow-600 dark:text-[#D4AF37] mb-1" />
+                          <span className="display text-xl font-black text-gray-900 dark:text-[#EDEAE3]">{p.weight}</span>
+                          <span className="mono text-[9px] text-gray-500 dark:text-[#8A8A8E] uppercase">kg plate</span>
+                        </div>
+                        <div className="text-center">
+                          <p className="mono text-[10px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">{p.label}</p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-[#EDEAE3] mt-0.5">{p.value}</p>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* right collar */}
+                  <div className="w-3 h-10 bg-gray-300 dark:bg-[#2c2c2f] rounded-sm flex-shrink-0" />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* About */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-center gap-3 mb-4 border-b border-gray-200 dark:border-white/10 pb-3">
+                <h2 className="display text-lg font-bold uppercase tracking-wide text-gray-900 dark:text-[#EDEAE3]">About this class</h2>
+              </div>
+              <p className="text-gray-600 dark:text-[#b8b6ae] leading-relaxed text-base">
                 {cls.aboutClass || cls.description || "Join us for an intense and rewarding session designed to push your limits."}
               </p>
-            </div>
+            </motion.div>
 
             {/* Coach */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-1.5 h-6 bg-red-700 rounded-full" />
-                <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Your Coach</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-center gap-3 mb-4 border-b border-gray-200 dark:border-white/10 pb-3">
+                <h2 className="display text-lg font-bold uppercase tracking-wide text-gray-900 dark:text-[#EDEAE3]">Your coach</h2>
               </div>
-              <div className="p-6 rounded-3xl bg-white dark:bg-[#0e0005] border border-gray-200 dark:border-white/[0.05] flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-red-700/20 flex-shrink-0">
-                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(cls.coach?.name || cls.trainer || "Coach")}&background=f97316&color=fff&size=128`} alt="Coach" className="w-full h-full object-cover" />
+              <div className="flex flex-col sm:flex-row gap-5 items-start">
+                <div className="w-20 h-20 overflow-hidden rounded-xl border-2 border-yellow-500 dark:border-[#D4AF37] flex-shrink-0">
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(cls.coach?.name || cls.trainer || "Coach")}&background=1C1C1F&color=EDEAE3&size=128`}
+                    alt="Coach"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="text-center sm:text-left">
-                  <p className="text-[10px] font-black text-red-700 dark:text-rose-400 uppercase tracking-widest mb-1">{cls.coach?.role || "Lead Coach"}</p>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">{cls.coach?.name || cls.trainer || "Expert Trainer"}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <div>
+                  <p className="mono text-[10px] text-red-700 dark:text-[#C8102E] uppercase tracking-widest mb-1">{cls.coach?.role || "Lead coach"}</p>
+                  <h3 className="display text-xl font-bold uppercase tracking-tight mb-2 text-gray-900 dark:text-[#EDEAE3]">{cls.coach?.name || cls.trainer || "Expert trainer"}</h3>
+                  <p className="text-gray-600 dark:text-[#b8b6ae] text-sm leading-relaxed max-w-md">
                     {cls.coach?.bio || "Certified fitness expert dedicated to helping you achieve your physical goals."}
                   </p>
                 </div>
               </div>
-            </div>
-
+            </motion.div>
           </div>
 
-          {/* ─── RIGHT COLUMN: Sticky Booking Card ─── */}
+          {/* ─── RIGHT: Booking card ─── */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 p-8 rounded-3xl bg-white dark:bg-[#0e0005] border border-gray-200 dark:border-white/[0.05] shadow-2xl">
-              
-              <div className="text-center pb-6 border-b border-gray-100 dark:border-white/[0.05] mb-6">
-                <span className="inline-block px-3 py-1 mb-4 text-[10px] font-black tracking-widest uppercase bg-red-700/10 text-red-700 dark:text-rose-400 rounded-full">
-                  {cls.passType || "Class Pass"}
-                </span>
-                <div className="flex justify-center items-start text-gray-900 dark:text-white">
-                  <span className="text-2xl font-bold mt-1">$</span>
-                  <span className="text-6xl font-black tracking-tighter">{cls.price}</span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="sticky top-24 bg-white dark:bg-[#111113] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-lg dark:shadow-none"
+            >
+              {/* Ticket header */}
+              <div className="px-6 pt-6 pb-5 border-b border-dashed border-gray-200 dark:border-white/15">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="mono text-[10px] uppercase tracking-widest text-gray-500 dark:text-[#8A8A8E]">{cls.passType || "Class pass"}</span>
+                  <span className="mono text-[10px] uppercase tracking-widest text-gray-500 dark:text-[#8A8A8E]">No. {(id || "000").toString().slice(-4)}</span>
                 </div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">
-                  {cls.paymentType || "One-Time Payment"}
+                <div className="flex items-baseline gap-1">
+                  <span className="display text-2xl font-bold text-yellow-600 dark:text-[#D4AF37]">$</span>
+                  <span className="display text-6xl font-black tracking-tight text-gray-900 dark:text-[#EDEAE3]">{cls.price}</span>
+                </div>
+                <p className="mono text-[10px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest mt-2">
+                  {cls.paymentType || "One-time payment"}
                 </p>
               </div>
 
-              <div className="space-y-5 mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/[0.02] flex items-center justify-center">
-                    <CalendarDays className="w-5 h-5 text-gray-400" />
-                  </div>
+              {/* Ticket body */}
+              <div className="px-6 py-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-4 h-4 text-gray-400 dark:text-[#8A8A8E] mt-0.5" />
                   <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Schedule</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{(cls.schedule?.days || []).join(", ")}</p>
+                    <p className="mono text-[10px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">Days</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-[#EDEAE3]">{days.length ? days.join(" · ") : "TBA"}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/[0.02] flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                  </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-4 h-4 text-gray-400 dark:text-[#8A8A8E] mt-0.5" />
                   <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Time</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.schedule?.time || "TBA"}</p>
+                    <p className="mono text-[10px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">Time</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-[#EDEAE3]">{time}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-gray-400 dark:text-[#8A8A8E] mt-0.5" />
+                  <div>
+                    <p className="mono text-[10px] text-gray-500 dark:text-[#8A8A8E] uppercase tracking-widest">Focus</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-[#EDEAE3]">{cls.focus || "Full body"}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <button 
+              {/* Perforation */}
+              <div className="relative h-0 border-t border-dashed border-gray-200 dark:border-white/15">
+                <div className="absolute -left-[1px] -top-3 w-6 h-6 rounded-full bg-gray-50 dark:bg-[#0B0B0D] border border-gray-200 dark:border-transparent" />
+                <div className="absolute -right-[1px] -top-3 w-6 h-6 rounded-full bg-gray-50 dark:bg-[#0B0B0D] border border-gray-200 dark:border-transparent" />
+              </div>
+
+              {/* Actions */}
+              <div className="px-6 pt-6 pb-6 space-y-3">
+                <button
                   onClick={handleBookNow}
                   disabled={isBooked}
-                  className={`w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm transition-all duration-300 ${
-                    isBooked 
-                      ? "bg-gray-100 dark:bg-white/[0.05] text-gray-400 cursor-not-allowed" 
-                      : "bg-red-700 hover:bg-red-800 text-white shadow-lg shadow-red-700/25 hover:shadow-red-700/40 hover:-translate-y-1"
+                  className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${
+                    isBooked
+                      ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
+                      : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
                   }`}
                 >
-                  {isBooked ? "Already Booked" : "Book This Class"}
+                  {isBooked ? (
+                    <><Check className="w-4 h-4" /> Already booked</>
+                  ) : (
+                    <>Book this class <ArrowRight className="w-4 h-4" /></>
+                  )}
                 </button>
 
-                <button 
+                <button
                   onClick={handleToggleFavorite}
                   disabled={actionLoading}
-                  className={`w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 border flex justify-center items-center gap-2 ${
+                  className={`fav-btn w-full py-3.5 rounded-lg font-semibold text-sm border flex justify-center items-center gap-2 transition-all ${
                     isFavorited
-                      ? "bg-orange-50 dark:bg-red-700/10 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400"
-                      : "bg-transparent border-gray-200 dark:border-white/[0.1] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                      ? "bg-yellow-50 dark:bg-[#D4AF37]/10 border-yellow-400 dark:border-[#D4AF37]/40 text-yellow-700 dark:text-[#D4AF37]"
+                      : "bg-transparent border-gray-200 dark:border-white/15 text-gray-600 dark:text-[#b8b6ae] hover:border-gray-400 dark:hover:border-white/30"
                   }`}
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <>
-                      <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} /> 
-                      {isFavorited ? "Saved to Favorites" : "Add to Favorites"}
+                      {isFavorited ? <Heart className="w-4 h-4 fill-current" /> : <Plus className="w-4 h-4" />}
+                      {isFavorited ? "Saved to favorites" : "Add to favorites"}
                     </>
                   )}
                 </button>
               </div>
-
-            </div>
+            </motion.div>
           </div>
 
         </div>

@@ -152,6 +152,16 @@ export default function ManageForumPostsPage() {
     );
   }
 
+  const getImage = (category) => {
+    const images = {
+      Nutrition: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80',
+      'Training Tips': 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
+      Recovery: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80',
+      Motivation: 'https://images.unsplash.com/photo-1526506114642-5445539d8bc3?auto=format&fit=crop&w=800&q=80',
+    };
+    return images[category] || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80';
+  };
+
   return (
     <>
       <Toast toasts={toasts} removeToast={removeToast} />
@@ -226,13 +236,7 @@ export default function ManageForumPostsPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-4">
                           <div className="relative h-14 w-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 shrink-0">
-                            {post.image ? (
-                              <Image src={post.image} alt={post.title} fill className="object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/5 text-gray-400">
-                                <MessageSquare size={20} />
-                              </div>
-                            )}
+                            <Image src={post.image || getImage(post.category)} alt={post.title} fill className="object-cover" />
                           </div>
                           <div className="max-w-[300px]">
                             <div className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1 mb-1">{post.title || "Untitled"}</div>

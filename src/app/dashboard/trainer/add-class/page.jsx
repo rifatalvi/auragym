@@ -11,10 +11,10 @@ export default function AddClassPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState(null);
 
   const [formData, setFormData] = useState({
     className: "",
-    image: "",
     category: "Yoga",
     level: "Beginner",
     duration: "60",
@@ -28,6 +28,12 @@ export default function AddClassPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!session?.user) {
@@ -39,9 +45,29 @@ export default function AddClassPage() {
     setError("");
 
     try {
+      let imageUrl = "";
+
+      if (imageFile) {
+        const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+        const uploadData = new FormData();
+        uploadData.append("image", imageFile);
+
+        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: "POST",
+          body: uploadData,
+        });
+
+        const uploadResult = await uploadRes.json();
+        if (uploadResult.success) {
+          imageUrl = uploadResult.data.display_url;
+        } else {
+          throw new Error("Failed to upload image.");
+        }
+      }
+
       const payload = {
         className: formData.className,
-        image: formData.image,
+        image: imageUrl,
         category: formData.category,
         level: formData.level,
         duration: `${formData.duration} mins`,
@@ -128,16 +154,15 @@ export default function AddClassPage() {
             />
           </div>
 
-          {/* Image URL */}
+          {/* Image Upload */}
           <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Image URL</label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Class Image</label>
             <input
-              type="url"
+              type="file"
               name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 dark:file:bg-red-900/20 dark:file:text-rose-400"
             />
           </div>
 

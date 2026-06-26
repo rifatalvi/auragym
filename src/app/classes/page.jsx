@@ -229,7 +229,7 @@ const ClassesPageInner = () => {
               book the perfect session for your fitness goals.
             </motion.p>
 
-            {/* â”€â”€ Search Bar â”€â”€ */}
+            {/* Search bar */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -266,7 +266,7 @@ const ClassesPageInner = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-2 text-[11px] text-gray-400 dark:text-gray-600 font-mono text-left px-1 truncate"
                 >
-                  ðŸ”— /classes
+                  — /classes
                   {urlSearch   && <span className="text-orange-500">?search=<span className="text-orange-400">{urlSearch}</span></span>}
                   {urlCategory && <span className="text-purple-500">{urlSearch ? "&" : "?"}category=<span className="text-purple-400">{urlCategory}</span></span>}
                   {urlPage > 1  && <span className="text-blue-400">page=<span className="text-blue-300">{urlPage}</span></span>}
@@ -350,7 +350,7 @@ const ClassesPageInner = () => {
               {urlSearch && (
                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-xs font-semibold text-orange-500">
                   <Search size={10} />
-                  &quot;{urlSearch}&quot;
+                 {urlSearch};
                   <button onClick={clearSearch} className="ml-0.5 hover:text-orange-700"><X size={10} /></button>
                 </span>
               )}
@@ -395,7 +395,7 @@ const ClassesPageInner = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No classes found</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs leading-relaxed">
-                We couldn&apos;t find any classes matching your criteria. Try different keywords or remove the active filters.
+                We could nt find any classes matching your criteria. Try different keywords or remove the active filters.
               </p>
               <button
                 onClick={clearAll}

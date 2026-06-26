@@ -5,7 +5,6 @@ import CustomPagination from "@/componet/Sheard/CustomPagination";
 import { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
 import Image from "next/image";
 
-
 function Toast({ toasts, removeToast }) {
   return (
     <div className="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none">
@@ -259,10 +258,13 @@ export default function ManageTrainersPage() {
           </div>
           {totalPages > 0 && (
             <div className="px-6 py-4 border-t border-gray-200 dark:border-white/8 flex items-center justify-between bg-gray-50 dark:bg-white/2 rounded-b-2xl">
-              <span className="text-xs text-gray-500 font-medium">
-                Page <span className="text-gray-900 dark:text-white font-bold">{page}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span>
-              </span>
-              <CustomPagination totalPages={totalPages} page={page} onChange={(p) => setPage(p)} />
+              <CustomPagination 
+                page={page} 
+                totalPages={totalPages} 
+                totalItems={stats.totalTrainers}
+                itemsPerPage={5}
+                onChange={(p) => setPage(p)} 
+              />
             </div>
           )}
         </div>
@@ -276,5 +278,4 @@ export default function ManageTrainersPage() {
     </>
   );
 }
-
 

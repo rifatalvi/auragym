@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { MdCreditCard, MdReceiptLong, MdCheckCircle, MdPerson } from "react-icons/md";
+import Link from "next/link";
 
 export default function TransactionsPage() {
   const { data: session, isPending } = useSession();
@@ -36,7 +37,7 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {/* Page Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
@@ -100,15 +101,18 @@ export default function TransactionsPage() {
                           <p className="text-[10px] text-gray-500 truncate max-w-[200px] mt-0.5">
                             {tx.email || "No email provided"}
                           </p>
+                          <p className="text-[10px] text-gray-500 truncate max-w-[200px] mt-0.5">
+                            Phone: {tx.userDetails?.number || "N/A"}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      <Link href={`/classes/${tx.classId}`} className="text-sm font-bold text-red-600 dark:text-rose-400 hover:underline">
                         {tx.classTitle || tx.classDetails?.className || "Unknown Class"}
-                      </p>
+                      </Link>
                       <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">
-                        Booking ID: {tx.transactionId || tx._id.toString().slice(-6)}
+                        Tx ID: {tx.transactionId || tx._id.toString().slice(-6)}
                       </p>
                     </td>
                     <td className="px-6 py-4">

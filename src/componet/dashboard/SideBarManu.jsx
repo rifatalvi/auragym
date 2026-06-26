@@ -48,6 +48,7 @@ export default function SideBarManu() {
     { icon: MdFitnessCenter, href: "/dashboard/trainer/my-classes", label: "My Classes" },
     { icon: MdPostAdd, href: "/dashboard/trainer/add-forum-post", label: "Add Forum Post" },
     { icon: MdForum, href: "/dashboard/trainer/my-forum-posts", label: "My Forum Posts" },
+    { icon: MdCreditCard, href: "/dashboard/trainer/transactions", label: "Transactions" },
   ];
 
   const adminNavItems = [

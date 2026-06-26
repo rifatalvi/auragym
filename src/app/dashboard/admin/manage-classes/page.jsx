@@ -127,10 +127,80 @@ export default function ManageClassesPage() {
           </div>
           {!loading && (
             <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-              {total} total class{total !== 1 ? "es" : ""}
+              {total} class{total !== 1 ? "es" : ""}
             </span>
           )}
         </div>
+      </div>
+
+      {/* ── Filter Bar ── */}
+      <div className="flex flex-wrap gap-4 items-center">
+        {/* Status filter */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Status:</span>
+          {STATUS_FILTERS.map((f) => {
+            const active = statusFilter === f.value;
+            const colorMap = {
+              gray:   active ? "bg-gray-700 text-white border-gray-700"   : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+              yellow: active ? "bg-yellow-500 text-white border-yellow-500" : "bg-white dark:bg-white/[0.03] text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30 hover:border-yellow-400",
+              green:  active ? "bg-green-600 text-white border-green-600"  : "bg-white dark:bg-white/[0.03] text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30 hover:border-green-400",
+              red:    active ? "bg-red-600 text-white border-red-600"     : "bg-white dark:bg-white/[0.03] text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30 hover:border-red-400",
+            };
+            return (
+              <button
+                key={f.value}
+                onClick={() => {
+                  setStatusFilter(f.value);
+                  fetchClasses(1, f.value, visibilityFilter);
+                }}
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.color]}`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08] hidden sm:block" />
+
+        {/* Visibility filter */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Visibility:</span>
+          {VISIBILITY_FILTERS.map((f) => {
+            const active = visibilityFilter === f.value;
+            const colorMap = {
+              all:    active ? "bg-gray-700 text-white border-gray-700"    : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+              open:   active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-white/[0.03] text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400",
+              closed: active ? "bg-slate-600 text-white border-slate-600"  : "bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/30 hover:border-slate-400",
+            };
+            return (
+              <button
+                key={f.value}
+                onClick={() => {
+                  setVisibilityFilter(f.value);
+                  fetchClasses(1, statusFilter, f.value);
+                }}
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.value]}`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Reset */}
+        {(statusFilter !== "all" || visibilityFilter !== "all") && (
+          <button
+            onClick={() => {
+              setStatusFilter("all");
+              setVisibilityFilter("all");
+              fetchClasses(1, "all", "all");
+            }}
+            className="ml-auto text-xs font-bold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors underline underline-offset-2"
+          >
+            Reset filters
+          </button>
+        )}
       </div>
 
       {/* Table */}

@@ -1,0 +1,141 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useSession } from "@/lib/auth-client";
+import { Loader2, Trash2, MessageSquare, AlertCircle } from "lucide-react";
+
+export default function MyForumPostsPage() {
+  const { data: session } = useSession();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(null);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [session]);
+
+  const fetchPosts = async () => {
+    if (!session?.user?.email) return;
+    try {
+      const res = await fetch("http://localhost:5000/api/forum");
+      const data = await res.json();
+      
+      // Filter posts by logged-in trainer's email or name
+      const myPosts = (data.posts || []).filter(
+        (post) => post.authorEmail === session.user.email || post.author === session.user.name
+      );
+      
+      setPosts(myPosts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (postId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
+    if (!confirmDelete) return;
+
+    setDeleteLoading(postId);
+    try {
+      const res = await fetch(`http://localhost:5000/api/forum/${postId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setPosts(posts.filter((post) => post._id !== postId));
+      } else {
+        alert("Failed to delete the post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("Something went wrong while deleting.");
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full space-y-6">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
+          <MessageSquare className="text-red-700 dark:text-rose-400" size={16} />
+          <span className="text-xs font-bold text-red-700 dark:text-rose-400 uppercase tracking-wider">My Forum Posts</span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Manage Your Forum Posts</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1.5 text-sm">
+          View and manage the tips, guides, and discussions you have shared with the community.
+        </p>
+      </div>
+
+      {posts.length === 0 ? (
+        <div className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-12 text-center flex flex-col items-center justify-center">
+          <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">No Posts Yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+            You haven't published any forum posts yet. Share your fitness knowledge and connect with members!
+          </p>
+          <a
+            href="/dashboard/trainer/add-forum-post"
+            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors"
+          >
+            Create Your First Post
+          </a>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post) => (
+            <div
+              key={post._id}
+              className="bg-white dark:bg-[#120010] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden flex flex-col"
+            >
+              {post.image ? (
+                <div className="h-40 w-full overflow-hidden">
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="h-40 w-full bg-gradient-to-br from-red-100 to-orange-50 dark:from-red-900/40 dark:to-orange-900/20 flex items-center justify-center">
+                  <MessageSquare className="w-12 h-12 text-red-300 dark:text-red-800" />
+                </div>
+              )}
+              <div className="p-5 flex flex-col flex-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 mb-2">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-1">
+                  {post.content || post.description}
+                </p>
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-white/[0.06]">
+                  <span className="text-xs font-medium text-gray-400">
+                    {new Date(post.createdAt || Date.now()).toLocaleDateString()}
+                  </span>
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    disabled={deleteLoading === post._id}
+                    className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors disabled:opacity-50"
+                  >
+                    {deleteLoading === post._id ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={16} />
+                    )}
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -71,6 +71,15 @@ export default function TransactionsPage() {
                     </div>
                     <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">No transactions found</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 mb-6">You haven&apos;t made any payments yet.</p>
+                    
+                    <div className="max-w-md mx-auto text-left bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl p-4 mt-6">
+                      <h4 className="text-sm font-bold text-red-800 dark:text-rose-400 mb-2 flex items-center gap-2"><MdCheckCircle size={16} /> Quick Tips for Trainers</h4>
+                      <ul className="text-xs text-red-700/80 dark:text-rose-300/80 space-y-1.5 list-disc pl-5">
+                        <li>Ensure your bank account is linked to receive payouts for your classes.</li>
+                        <li>Payments for booked classes usually reflect here within 24-48 hours.</li>
+                        <li>For any payment disputes, contact support with the Transaction ID.</li>
+                      </ul>
+                    </div>
                   </td>
                 </tr>
               ) : (

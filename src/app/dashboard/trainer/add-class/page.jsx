@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { Loader2, PlusCircle, CheckCircle } from "lucide-react";
+import { Loader2, PlusCircle, CheckCircle, UploadCloud, Calendar } from "lucide-react";
 
 export default function AddClassPage() {
   const { data: session } = useSession();
@@ -19,8 +19,9 @@ export default function AddClassPage() {
     level: "Beginner",
     duration: "60",
     maxStudents: "20",
-    days: "Monday, Wednesday",
-    time: "10:00 AM",
+    days: ["Mon", "Wed"],
+    startTime: "10:00",
+    endTime: "11:00",
     price: "",
     description: "",
   });
@@ -33,6 +34,17 @@ export default function AddClassPage() {
     if (e.target.files && e.target.files[0]) {
       setImageFile(e.target.files[0]);
     }
+  };
+
+  const toggleDay = (day) => {
+    setFormData((prev) => {
+      const currentDays = Array.isArray(prev.days) ? prev.days : [];
+      if (currentDays.includes(day)) {
+        return { ...prev, days: currentDays.filter((d) => d !== day) };
+      } else {
+        return { ...prev, days: [...currentDays, day] };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -73,8 +85,8 @@ export default function AddClassPage() {
         level: formData.level,
         duration: `${formData.duration} mins`,
         schedule: {
-          days: formData.days.split(",").map((d) => d.trim()),
-          time: formData.time,
+          days: Array.isArray(formData.days) ? formData.days : [],
+          time: `${formData.startTime} - ${formData.endTime}`,
         },
         price: formData.price,
         description: formData.description,
@@ -119,7 +131,7 @@ export default function AddClassPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full mx-auto space-y-6">
       {/* Page Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
@@ -159,13 +171,29 @@ export default function AddClassPage() {
           {/* Image Upload */}
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Class Image</label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 dark:file:bg-red-900/20 dark:file:text-rose-400"
-            />
+            <div className="w-full flex items-center justify-center p-6 border-2 border-dashed border-gray-300 dark:border-white/[0.15] rounded-xl bg-gray-50 dark:bg-white/[0.02] hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors cursor-pointer relative min-h-[160px]">
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    {imageFile ? (
+                        <div className="text-center">
+                           <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                           <p className="font-medium text-green-600 dark:text-green-400">{imageFile.name}</p>
+                        </div>
+                    ) : (
+                        <>
+                            <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
+                            <p className="font-medium text-gray-700 dark:text-gray-300 mb-1">Click or drag image to upload</p>
+                            <p className="text-xs text-gray-500">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                        </>
+                    )}
+                </div>
+            </div>
           </div>
 
           {/* Category */}
@@ -255,29 +283,54 @@ export default function AddClassPage() {
           </div>
 
           {/* Schedule: Days */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Class Schedule (Days) <span className="text-red-500">*</span></label>
+          <div className="space-y-4 md:col-span-2 mt-2">
+            <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Weekly Schedule (Select Days) <span className="text-red-500">*</span></label>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => {
+                const isSelected = Array.isArray(formData.days) && formData.days.includes(day);
+                return (
+                  <button
+                    type="button"
+                    key={day}
+                    onClick={() => toggleDay(day)}
+                    className={`px-6 py-2.5 rounded-full border text-sm font-medium transition-all ${
+                      isSelected
+                        ? "bg-red-600 border-red-600 text-white shadow-md shadow-red-600/20"
+                        : "bg-white dark:bg-[#120010] border-gray-200 dark:border-white/[0.10] text-gray-700 dark:text-gray-300 hover:border-red-500 hover:text-red-500"
+                    }`}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+           {/* Schedule: Start Time */}
+           <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Start Time <span className="text-red-500">*</span></label>
             <input
-              type="text"
-              name="days"
+              type="time"
+              name="startTime"
               required
-              value={formData.days}
+              value={formData.startTime}
               onChange={handleChange}
-              placeholder="e.g. Monday, Wednesday, Friday"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
             />
           </div>
 
-           {/* Schedule: Time */}
+           {/* Schedule: End Time */}
            <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Class Time <span className="text-red-500">*</span></label>
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">End Time <span className="text-red-500">*</span></label>
             <input
-              type="text"
-              name="time"
+              type="time"
+              name="endTime"
               required
-              value={formData.time}
+              value={formData.endTime}
               onChange={handleChange}
-              placeholder="e.g. 10:00 AM"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
             />
           </div>

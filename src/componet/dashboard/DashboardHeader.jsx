@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useSession } from "@/lib/auth-client";
-import { MdSearch, MdNotifications, MdOutlineLightMode, MdOutlineDarkMode, MdFavorite, MdSettings, MdLogout, MdDashboard, MdKeyboardArrowDown } from "react-icons/md";
+import { MdSearch, MdNotifications, MdOutlineLightMode, MdOutlineDarkMode, MdFavorite, MdSettings, MdLogout, MdDashboard, MdKeyboardArrowDown, MdArrowBack } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
 
 import Link from 'next/link';
@@ -41,6 +41,7 @@ export default function DashboardHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const profileRef = useRef(null);
   const searchRef = useRef(null);
   const router = useRouter();
@@ -57,6 +58,7 @@ export default function DashboardHeader() {
       }
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsSearchFocused(false);
+        setIsSearchExpanded(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -94,31 +96,57 @@ export default function DashboardHeader() {
 
   return (
     <header className="h-16 border-b border-gray-200 dark:border-white/[0.08] bg-white/50 dark:bg-[#0a0007]/50 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-10">
-      {/* Search Bar with Suggestions */}
-      <div className="relative flex-1 max-w-xl" ref={searchRef}>
-        <div className={`flex items-center w-full bg-gray-100/80 dark:bg-white/[0.04] rounded-lg px-3 py-2 border transition-colors shadow-sm ${isSearchFocused ? "border-red-400 dark:border-rose-500/50" : "border-transparent focus-within:border-gray-300 dark:focus-within:border-white/[0.08]"}`}>
-          <MdSearch className={`text-xl flex-shrink-0 transition-colors ${isSearchFocused ? "text-red-500 dark:text-rose-400" : "text-gray-400"}`} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onFocus={() => setIsSearchFocused(true)}
-            placeholder="Search menu items..."
-            className="bg-transparent border-none outline-none text-sm text-gray-700 dark:text-gray-200 ml-2 w-full placeholder-gray-400"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => { setSearchQuery(""); setSuggestions([]); }}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-1 flex-shrink-0 transition-colors text-xs font-bold"
-            >
-              ✕
-            </button>
-          )}
+      {/* Left side: Back Button and Welcome Text */}
+      <div className="flex items-center gap-4 flex-1">
+        <button 
+          onClick={() => router.back()}
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors text-gray-600 dark:text-gray-300 flex items-center gap-2"
+        >
+          <MdArrowBack size={20} />
+          <span className="hidden sm:inline-block text-sm font-medium">Back</span>
+        </button>
+        
+        <div className="flex flex-col">
+          <h2 className="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100">
+            Welcome, {session?.user?.name || "User"}
+          </h2>
+          <p className="text-xs text-red-500 font-medium capitalize">
+            {session?.user?.role || "Member"}
+          </p>
         </div>
+      </div>
+
+      {/* Right Side Icons & Search */}
+      <div className="flex items-center gap-3 ml-4 justify-end flex-1">
+        
+        {/* Expandable Search */}
+        <div className="relative flex items-center justify-end" ref={searchRef}>
+          <div className={`flex items-center bg-gray-100/80 dark:bg-white/[0.04] rounded-full transition-all duration-300 ease-in-out border ${isSearchExpanded ? "w-64 px-3 py-1.5 border-red-400 dark:border-rose-500/50" : "w-9 h-9 justify-center border-transparent cursor-pointer hover:bg-gray-200 dark:hover:bg-white/[0.08]"}`}
+               onClick={() => { if(!isSearchExpanded) setIsSearchExpanded(true) }}>
+            <MdSearch className={`text-xl flex-shrink-0 transition-colors ${isSearchExpanded ? "text-red-500 dark:text-rose-400" : "text-gray-500 dark:text-gray-400"}`} />
+            
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => { setIsSearchFocused(true); setIsSearchExpanded(true); }}
+              placeholder="Search..."
+              className={`bg-transparent border-none outline-none text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all duration-300 ${isSearchExpanded ? "w-full ml-2 opacity-100" : "w-0 opacity-0"}`}
+              style={{ padding: 0 }}
+            />
+            {isSearchExpanded && searchQuery && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setSearchQuery(""); setSuggestions([]); }}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-1 flex-shrink-0 transition-colors text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
         {/* Suggestions Dropdown */}
         {isSearchFocused && suggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#120010] border border-gray-200 dark:border-white/[0.10] rounded-xl shadow-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full right-0 mt-1.5 w-64 bg-white dark:bg-[#120010] border border-gray-200 dark:border-white/[0.10] rounded-xl shadow-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="px-3 py-2 border-b border-gray-100 dark:border-white/[0.06]">
               <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Menu Items</p>
             </div>
@@ -153,16 +181,14 @@ export default function DashboardHeader() {
 
         {/* No suggestions found */}
         {isSearchFocused && searchQuery.trim().length > 0 && suggestions.length === 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#120010] border border-gray-200 dark:border-white/[0.10] rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full right-0 mt-1.5 w-64 bg-white dark:bg-[#120010] border border-gray-200 dark:border-white/[0.10] rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="px-4 py-4 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">No menu items found for <span className="font-semibold text-gray-700 dark:text-gray-200">&quot;{searchQuery}&quot;</span></p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">No items found for <span className="font-semibold text-gray-700 dark:text-gray-200">&quot;{searchQuery}&quot;</span></p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Right Side Icons */}
-      <div className="flex items-center gap-3 ml-4">
         {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

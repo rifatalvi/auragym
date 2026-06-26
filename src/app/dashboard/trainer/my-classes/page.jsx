@@ -131,7 +131,15 @@ export default function MyClassesPage() {
               {classes.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-16 text-center">
-                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">You haven't added any classes yet.</p>
+                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6">You haven't added any classes yet.</p>
+                    <div className="max-w-md mx-auto text-left bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-4">
+                      <h4 className="text-sm font-bold text-blue-800 dark:text-blue-400 mb-2 flex items-center gap-2"><MdCheckCircle size={16} /> Class Management Tips</h4>
+                      <ul className="text-xs text-blue-700/80 dark:text-blue-300/80 space-y-1.5 list-disc pl-5">
+                        <li>Go to "Add Class" to create your first session.</li>
+                        <li>Detailed and engaging descriptions attract more students.</li>
+                        <li>Keep your schedule updated to avoid booking conflicts.</li>
+                      </ul>
+                    </div>
                   </td>
                 </tr>
               ) : (

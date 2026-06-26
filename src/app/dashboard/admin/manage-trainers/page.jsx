@@ -106,7 +106,11 @@ export default function ManageTrainersPage() {
 
   // Reset to page 1 only when search query changes
   useEffect(() => {
-    setPage(1);
+    const timer = window.setTimeout(() => {
+      setPage(1);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [search]);
 
   // Fetch data with a slight debounce

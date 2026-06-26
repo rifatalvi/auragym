@@ -89,7 +89,7 @@ export default function ManageForumPostsPage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/forum");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`);
       if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
       setPosts(data.posts || data || []);
@@ -102,12 +102,20 @@ export default function ManageForumPostsPage() {
   }, []);
 
   useEffect(() => {
-    fetchPosts();
+    const timer = window.setTimeout(() => {
+      void fetchPosts();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [fetchPosts]);
 
   // Reset to page 1 only when search query changes
   useEffect(() => {
-    setPage(1);
+    const timer = window.setTimeout(() => {
+      setPage(1);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [search]);
 
   const handleDelete = (postId) => {
@@ -116,12 +124,12 @@ export default function ManageForumPostsPage() {
       "Are you sure you want to delete this forum post? This action cannot be undone and the post will be permanently removed.",
       async () => {
         try {
-          const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/forum/${postId}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, {
             method: "DELETE",
           });
           if (!res.ok) throw new Error("Failed to delete post");
           addToast("Post deleted successfully", "success");
-          fetchPosts(); // Refresh list after deletion
+          void fetchPosts(); // Refresh list after deletion
         } catch (err) {
           console.error(err);
           addToast("Failed to delete post", "error");
@@ -246,7 +254,7 @@ export default function ManageForumPostsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(post.createdAt || Date.now()).toLocaleDateString()}
+                          {new Date(post.createdAt || new Date()).toLocaleDateString()}
                         </span>
                       </td>
                       <td className="px-6 py-4">

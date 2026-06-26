@@ -21,7 +21,7 @@ export default function FavoriteClassesPage() {
     const fetchFavorites = async () => {
       if (!session?.user?.id) return;
       try {
-        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.id}/favorites`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/favorites`);
         if (res.ok) {
           const data = await res.json();
           setFavorites(data);
@@ -39,7 +39,7 @@ export default function FavoriteClassesPage() {
     if (!session?.user?.id) return;
     setRemovingId(classId);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/favorites/toggle", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId, userId: session.user.id })
@@ -84,7 +84,7 @@ export default function FavoriteClassesPage() {
           </div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No favorites yet</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-            You haven't saved any classes yet. Browse our schedule and click the heart icon to save classes here.
+            You haven t saved any classes yet. Browse our schedule and click the heart icon to save classes here.
           </p>
           <Link
             href="/classes"

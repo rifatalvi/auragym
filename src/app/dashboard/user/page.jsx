@@ -85,7 +85,7 @@ export default function UserOverviewPage() {
         className="mb-8"
       >
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">Here's what's happening with your fitness journey today.</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">Here whats happening with your fitness journey today.</p>
       </motion.div>
 
       {/* ── Member Upgrade Banner (for plain users) ── */}
@@ -232,7 +232,7 @@ export default function UserOverviewPage() {
                     <MdMail className="text-red-400 mt-0.5 flex-shrink-0" size={18} />
                     <div>
                       <h4 className="text-xs font-bold uppercase tracking-wider text-red-400 mb-1">Admin Feedback</h4>
-                      <p className="text-sm text-gray-300 italic">"{stats.applicationFeedback}"</p>
+                      <p className="text-sm text-gray-300 italic">{stats.applicationFeedback}</p>
                       
                       <Link 
                         href="/dashboard/user/apply-trainer"

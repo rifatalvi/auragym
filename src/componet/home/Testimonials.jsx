@@ -79,7 +79,7 @@ export default function Testimonials() {
             </span>
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-xl mx-auto text-base">
-            Thousands of members have already transformed their lives. Here's what they have to say
+            Thousands of members have already transformed their lives. Here is what they have to say
             about their AuraGym journey.
           </p>
         </motion.div>

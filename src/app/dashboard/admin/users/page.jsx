@@ -137,7 +137,7 @@ export default function ManageUsersPage() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(apiUrl + '/api/admin/users?page=' + page + '&limit=5&search=' + search + '&role=' + roleFilter);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
@@ -152,11 +152,21 @@ export default function ManageUsersPage() {
     }
   }, [page, roleFilter, search]);
 
-  useEffect(() => { fetchUsers(); }, [page, roleFilter]);
   useEffect(() => {
-    const handler = setTimeout(() => { setPage(1); fetchUsers(); }, 500);
+    const timer = window.setTimeout(() => {
+      void fetchUsers();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [page, roleFilter, fetchUsers]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setPage(1);
+      void fetchUsers();
+    }, 500);
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, fetchUsers]);
 
   const handleBlockToggle = (userId, currentStatus) => {
     const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
@@ -166,7 +176,7 @@ export default function ManageUsersPage() {
       'Are you sure you want to ' + action.toLowerCase() + ' this user?',
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
           const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/block', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -188,7 +198,7 @@ export default function ManageUsersPage() {
       'Are you sure you want to change this user role to ' + newRole + '?',
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
           const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/role', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -229,7 +239,7 @@ export default function ManageUsersPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-md text-sm leading-relaxed">
-              Monitor, manage, and secure your platform's user base.
+              Monitor, manage, and secure your platforms user base.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
@@ -335,7 +345,7 @@ export default function ManageUsersPage() {
                             <div className="font-semibold text-gray-900 dark:text-white text-sm">{user.name || 'N/A'}</div>
                             <div className="text-xs text-gray-500">{user.email}</div>
                             <div className="text-xs text-gray-400 dark:text-gray-600 mt-0.5 uppercase tracking-wider font-medium">
-                              {new Date(user.createdAt || Date.now()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              {new Date(user.createdAt || new Date().toISOString()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                             </div>
                           </div>
                         </div>

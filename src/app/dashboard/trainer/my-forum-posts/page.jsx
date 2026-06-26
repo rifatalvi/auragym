@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Loader2, Trash2, MessageSquare, AlertCircle } from "lucide-react";
 import { CardSkeleton } from "@/componet/Sheard/Skeleton";
@@ -11,28 +11,31 @@ export default function MyForumPostsPage() {
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(null);
 
-  useEffect(() => {
-    fetchPosts();
-  }, [session]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/forum");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`);
       const data = await res.json();
-      
-      // Filter posts by logged-in trainer's email or name
+
       const myPosts = (data.posts || []).filter(
         (post) => post.authorEmail === session.user.email || post.author === session.user.name
       );
-      
+
       setPosts(myPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchPosts();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [fetchPosts]);
 
   const handleDelete = async (postId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this post? This action cannot be undone.");
@@ -90,7 +93,7 @@ export default function MyForumPostsPage() {
           <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">No Posts Yet</h3>
           <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
-            You haven't published any forum posts yet. Share your fitness knowledge and connect with members!
+            You haven&apos;t published any forum posts yet. Share your fitness knowledge and connect with members!
           </p>
           <a
             href="/dashboard/trainer/add-forum-post"
@@ -124,7 +127,7 @@ export default function MyForumPostsPage() {
                 </p>
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-white/[0.06]">
                   <span className="text-xs font-medium text-gray-400">
-                    {new Date(post.createdAt || Date.now()).toLocaleDateString()}
+                    {new Date(post.createdAt || new Date()).toLocaleDateString()}
                   </span>
                   <button
                     onClick={() => handleDelete(post._id)}

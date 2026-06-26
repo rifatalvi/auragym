@@ -95,7 +95,7 @@ export default function AddClassPage() {
         status: "Pending",
       };
 
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/classes", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export default function AddClassPage() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Add a New Class</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1.5 text-sm">
-          Create a new class for members. Note: New classes require admin approval and will start as "Pending".
+          Create a new class for members. Note: New classes require admin approval and will start as Pending.
         </p>
       </div>
 

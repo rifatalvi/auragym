@@ -137,7 +137,7 @@ function DetailsModal({ app, onClose, onApprove, onReject }) {
             <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold ${statusStyle(app.status).pill}`}>
               {statusStyle(app.status).icon}
               Status: {app.status}
-              {app.feedback && <span className="font-normal ml-1">— "{app.feedback}"</span>}
+              {app.feedback && <span className="font-normal ml-1">{app.feedback}</span>}
             </div>
           )}
 
@@ -209,9 +209,8 @@ export default function AppliedTrainersPage() {
     setLoading(true);
     try {
       const status = activeFilter === "All" ? "" : activeFilter;
-      const res = await fetch(
-        `$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/trainer-applications${status ? `?status=${status}` : ""}`
-      );
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/api/admin/trainer-applications${status ? `?status=${status}` : ""}`);
       const data = await res.json();
       setApplications(Array.isArray(data) ? data : []);
     } catch {
@@ -221,11 +220,17 @@ export default function AppliedTrainersPage() {
     }
   }, [activeFilter]);
 
-  useEffect(() => { fetchApplications(); }, [fetchApplications]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchApplications();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [fetchApplications]);
 
   const handleApprove = async (id) => {
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/trainer-applications/${id}/approve`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainer-applications/${id}/approve`, {
         method: "POST",
       });
       if (res.ok) {
@@ -242,7 +247,7 @@ export default function AppliedTrainersPage() {
 
   const handleReject = async (id, feedback) => {
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/trainer-applications/${id}/reject`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainer-applications/${id}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ feedback }),

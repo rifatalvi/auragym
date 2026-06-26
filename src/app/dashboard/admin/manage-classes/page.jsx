@@ -62,7 +62,13 @@ export default function ManageClassesPage() {
   }, [statusFilter, visibilityFilter]);
 
   useEffect(() => {
-    if (!isPending) fetchClasses(1);
+    if (!isPending) {
+      const timer = window.setTimeout(() => {
+        void fetchClasses(1);
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    }
   }, [isPending, fetchClasses]);
 
   const handleAction = async (id, action) => {

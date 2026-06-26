@@ -113,7 +113,7 @@ const SignInPage = () => {
           <div className="mb-8">
             <h2 className="text-3xl font-extrabold text-white mb-2 tracking-tight">Welcome back</h2>
             <p className="text-gray-400 text-sm">
-              Don't have an account?{' '}
+              Don t have an account?{' '}
               <Link href="/auth/signup" className="text-[#FF6600] font-semibold hover:text-[#e65c00] transition-colors">
                 Sign up free
               </Link>

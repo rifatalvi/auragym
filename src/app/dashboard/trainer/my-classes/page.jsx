@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import { MdLibraryBooks, MdEdit, MdDelete, MdPeople, MdClose, MdCheckCircle, MdCancel, MdPendingActions } from "react-icons/md";
 import Image from "next/image";
@@ -19,10 +19,10 @@ export default function MyClassesPage() {
   const [attendees, setAttendees] = useState([]);
   const [attendeesLoading, setAttendeesLoading] = useState(false);
 
-  const fetchClasses = async () => {
+  const fetchClasses = useCallback(async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer/${session.user.email}/classes`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`);
       if (res.ok) {
         const data = await res.json();
         setClasses(data);
@@ -32,11 +32,17 @@ export default function MyClassesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
-    if (!isPending) fetchClasses();
-  }, [session, isPending]);
+    if (!isPending) {
+      const timer = window.setTimeout(() => {
+        void fetchClasses();
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    }
+  }, [session, isPending, fetchClasses]);
 
   const confirmDelete = async (e) => {
     e.preventDefault();
@@ -131,11 +137,11 @@ export default function MyClassesPage() {
               {classes.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-16 text-center">
-                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6">You haven't added any classes yet.</p>
+                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6">You haven&apos;t added any classes yet.</p>
                     <div className="max-w-md mx-auto text-left bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-4">
                       <h4 className="text-sm font-bold text-blue-800 dark:text-blue-400 mb-2 flex items-center gap-2"><MdCheckCircle size={16} /> Class Management Tips</h4>
                       <ul className="text-xs text-blue-700/80 dark:text-blue-300/80 space-y-1.5 list-disc pl-5">
-                        <li>Go to "Add Class" to create your first session.</li>
+                        <li>Go to &quot;Add Class&quot; to create your first session.</li>
                         <li>Detailed and engaging descriptions attract more students.</li>
                         <li>Keep your schedule updated to avoid booking conflicts.</li>
                       </ul>

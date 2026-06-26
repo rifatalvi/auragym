@@ -72,7 +72,7 @@ export default function ApplyAsTrainer() {
     setErrors({});
     setSubmitting(true);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/trainer-apply", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer-apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -178,7 +178,7 @@ export default function ApplyAsTrainer() {
             {isRejected && existingApp.feedback && (
               <div className="mt-5 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl">
                 <p className="text-xs font-bold text-red-500 uppercase tracking-wider mb-1.5">Admin Feedback</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{existingApp.feedback}"</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 italic">{existingApp.feedback}</p>
               </div>
             )}
 
@@ -226,7 +226,7 @@ export default function ApplyAsTrainer() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Application Submitted!</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
-            Your trainer application is now under review. We&apos;ll notify you once a decision is made.
+            Your trainer application is now under review. We will notify you once a decision is made.
           </p>
           <div className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-sm font-bold text-gray-600 dark:text-gray-300 mb-6">
             <MdPendingActions size={18} /> Status: Pending Review

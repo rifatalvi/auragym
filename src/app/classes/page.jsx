@@ -14,12 +14,11 @@ import {
   Search,
   SlidersHorizontal,
   X,
-  ChevronLeft,
-  ChevronRight,
+
   Zap,
 } from "lucide-react";
 
-// â”€â”€ Category config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 const categoryConfig = {
   Yoga:     { icon: Sparkles, color: "#f97316" },
   Cardio:   { icon: Heart,    color: "#ef4444" },
@@ -31,7 +30,7 @@ const categoryConfig = {
 const CATEGORIES = Object.keys(categoryConfig);
 const LIMIT = 6;
 
-// â”€â”€ Skeleton Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 const SkeletonCard = () => (
   <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#0e1117] border border-gray-200/80 dark:border-white/[0.06] animate-pulse">
     <div className="h-52 bg-gray-200 dark:bg-white/5" />
@@ -53,16 +52,13 @@ const SkeletonCard = () => (
   </div>
 );
 
-// â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-
-// â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ClassesPageInner = () => {
   const router        = useRouter();
   const pathname      = usePathname();
   const searchParams  = useSearchParams();
 
-  // â”€â”€ Read initial state directly from URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ 
   const [searchInput, setSearchInput]       = useState(searchParams.get("search") || "");
   const [classes, setClasses]               = useState([]);
   const [totalPages, setTotalPages]         = useState(1);
@@ -75,7 +71,7 @@ const ClassesPageInner = () => {
   const urlCategory = searchParams.get("category") || "";
   const urlPage     = parseInt(searchParams.get("page") || "1", 10);
 
-  // â”€â”€ Helper: push updated params to URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
   const pushURL = useCallback(
     ({ search, category, page }) => {
       const params = new URLSearchParams();
@@ -89,7 +85,7 @@ const ClassesPageInner = () => {
     [router, pathname]
   );
 
-  // â”€â”€ Debounce search input â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -98,19 +94,19 @@ const ClassesPageInner = () => {
     return () => clearTimeout(debounceRef.current);
   }, [searchInput]);  // eslint-disable-line react-hooks/exhaustive-deps
 
-  // â”€â”€ Category toggle â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   const handleCategoryClick = (cat) => {
     const next = urlCategory === cat ? "" : cat;
     pushURL({ search: urlSearch, category: next, page: 1 });
   };
 
-  // â”€â”€ Pagination â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   const handlePageChange = (p) => {
     pushURL({ search: urlSearch, category: urlCategory, page: p });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // â”€â”€ Clear all filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
   const clearAll = () => {
     setSearchInput("");
     router.push(pathname, { scroll: false });
@@ -125,7 +121,7 @@ const ClassesPageInner = () => {
     pushURL({ search: urlSearch, category: "", page: 1 });
   };
 
-  // â”€â”€ Fetch classes whenever URL params change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading(true);
@@ -134,7 +130,7 @@ const ClassesPageInner = () => {
         if (urlSearch)   params.set("search",   urlSearch);
         if (urlCategory) params.set("category", urlCategory);
 
-        const res  = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/classes?${params}`);
+        const res  = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes?${params}`);
         const data = await res.json();
 
         if (res.ok) {
@@ -154,15 +150,17 @@ const ClassesPageInner = () => {
 
   // Keep input in sync when URL changes externally (browser back/forward)
   useEffect(() => {
-    setSearchInput(urlSearch);
+    const timer = window.setTimeout(() => {
+      setSearchInput(urlSearch);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [urlSearch]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#060b13] transition-colors duration-300">
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          HERO SECTION
-      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+
       <section className="relative overflow-hidden bg-white dark:bg-[#060b13] pt-24 pb-20">
 
         {/* Background decorations */}
@@ -271,7 +269,7 @@ const ClassesPageInner = () => {
                   ðŸ”— /classes
                   {urlSearch   && <span className="text-orange-500">?search=<span className="text-orange-400">{urlSearch}</span></span>}
                   {urlCategory && <span className="text-purple-500">{urlSearch ? "&" : "?"}category=<span className="text-purple-400">{urlCategory}</span></span>}
-                  {urlPage > 1  && <span className="text-blue-400">&amp;page=<span className="text-blue-300">{urlPage}</span></span>}
+                  {urlPage > 1  && <span className="text-blue-400">page=<span className="text-blue-300">{urlPage}</span></span>}
                 </motion.p>
               )}
             </motion.div>
@@ -321,9 +319,7 @@ const ClassesPageInner = () => {
         </div>
       </section>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          RESULTS SECTION
-      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         {/* Results meta row */}
@@ -354,7 +350,7 @@ const ClassesPageInner = () => {
               {urlSearch && (
                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-xs font-semibold text-orange-500">
                   <Search size={10} />
-                  "{urlSearch}"
+                  &quot;{urlSearch}&quot;
                   <button onClick={clearSearch} className="ml-0.5 hover:text-orange-700"><X size={10} /></button>
                 </span>
               )}
@@ -399,7 +395,7 @@ const ClassesPageInner = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No classes found</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs leading-relaxed">
-                We couldn't find any classes matching your criteria. Try different keywords or remove the active filters.
+                We couldn&apos;t find any classes matching your criteria. Try different keywords or remove the active filters.
               </p>
               <button
                 onClick={clearAll}

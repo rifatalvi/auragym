@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
@@ -347,15 +347,7 @@ export default function ManageClassesPage() {
               <span className="font-bold text-gray-700 dark:text-gray-300">{totalPages}</span> &nbsp;Â·&nbsp;{" "}
               <span className="font-bold text-gray-700 dark:text-gray-300">{total}</span> total classes
             </p>
-            <Pagination 
-              showControls 
-              total={totalPages} 
-              initialPage={1} 
-              page={page} 
-              onChange={(p) => setPage(p)} 
-              color="danger"
-              size="sm"
-            />
+            <CustomPagination totalPages={totalPages} page={page} onChange={(p) => setPage(p)} />
           </div>
         )}
       </div>

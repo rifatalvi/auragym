@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import CustomPagination from "@/componet/Sheard/CustomPagination";
 import { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
 import Image from "next/image";
+
 
 function Toast({ toasts, removeToast }) {
   return (
@@ -261,15 +262,7 @@ export default function ManageTrainersPage() {
               <span className="text-xs text-gray-500 font-medium">
                 Page <span className="text-gray-900 dark:text-white font-bold">{page}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span>
               </span>
-              <Pagination 
-                showControls 
-                total={totalPages} 
-                initialPage={1} 
-                page={page} 
-                onChange={(p) => setPage(p)} 
-                color="secondary"
-                size="sm"
-              />
+              <CustomPagination totalPages={totalPages} page={page} onChange={(p) => setPage(p)} />
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
+import { Pagination } from "@heroui/react";`nimport { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
 import Image from "next/image";
 
 function Toast({ toasts, removeToast }) {
@@ -260,18 +260,15 @@ export default function ManageTrainersPage() {
               <span className="text-xs text-gray-500 font-medium">
                 Page <span className="text-gray-900 dark:text-white font-bold">{page}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span>
               </span>
-              <div className="flex items-center gap-1">
-                <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 disabled:opacity-50 dark:disabled:opacity-30 border border-gray-200 dark:border-white/10 transition-all">
-                  <ChevronLeft size={15} />
-                </button>
-                <span className="w-9 h-8 flex items-center justify-center text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg">
-                  {page}
-                </span>
-                <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 disabled:opacity-50 dark:disabled:opacity-30 border border-gray-200 dark:border-white/10 transition-all">
-                  <ChevronRight size={15} />
-                </button>
-              </div>
-            </div>
+              <Pagination 
+                showControls 
+                total={totalPages} 
+                initialPage={1} 
+                page={page} 
+                onChange={(p) => setPage(p)} 
+                color="secondary"
+                size="sm"
+              />
           )}
         </div>
       </div>
@@ -284,3 +281,4 @@ export default function ManageTrainersPage() {
     </>
   );
 }
+

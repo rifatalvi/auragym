@@ -133,7 +133,7 @@ export default function ManageClassesPage() {
         </div>
       </div>
 
-      {/* ── Filter Bar ── */}
+      {/* â”€â”€ Filter Bar â”€â”€ */}
       <div className="flex flex-wrap gap-4 items-center">
         {/* Status filter */}
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -250,14 +250,14 @@ export default function ManageClassesPage() {
                         )}
                         <div>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
-                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} • ${cls.price}</p>
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} â€¢ ${cls.price}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Trainer */}
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || "—"}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || "â€”"}</p>
                     </td>
 
                     {/* Category */}
@@ -281,7 +281,7 @@ export default function ManageClassesPage() {
                       </div>
                     </td>
 
-                    {/* Open / Closed Toggle — only for Approved classes */}
+                    {/* Open / Closed Toggle â€” only for Approved classes */}
                     <td className="px-6 py-4">
                       {isApproved(cls) ? (
                         <button
@@ -298,7 +298,7 @@ export default function ManageClassesPage() {
                           {cls.isOpen ? "Open" : "Closed"}
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">—</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">â€”</span>
                       )}
                     </td>
 
@@ -346,54 +346,19 @@ export default function ManageClassesPage() {
               <span className="font-bold text-gray-700 dark:text-gray-300">{totalPages}</span> &nbsp;·&nbsp;{" "}
               <span className="font-bold text-gray-700 dark:text-gray-300">{total}</span> total classes
             </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => fetchClasses(page - 1)}
-                disabled={page <= 1 || loading}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-40 transition-colors"
-              >
-                <MdChevronLeft size={18} /> Prev
-              </button>
-
-              {/* Page number pills */}
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-                  .reduce((acc, p, idx, arr) => {
-                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("...");
-                    acc.push(p);
-                    return acc;
-                  }, [])
-                  .map((p, idx) =>
-                    p === "..." ? (
-                      <span key={`dot-${idx}`} className="text-gray-400 text-xs px-1">…</span>
-                    ) : (
-                      <button
-                        key={p}
-                        onClick={() => fetchClasses(p)}
-                        className={`w-8 h-8 rounded-lg text-sm font-bold transition-colors ${
-                          p === page
-                            ? "bg-red-600 text-white shadow-md shadow-red-600/20"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.08]"
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    )
-                  )}
-              </div>
-
-              <button
-                onClick={() => fetchClasses(page + 1)}
-                disabled={page >= totalPages || loading}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-40 transition-colors"
-              >
-                Next <MdChevronRight size={18} />
-              </button>
-            </div>
+            <Pagination 
+              showControls 
+              total={totalPages} 
+              initialPage={1} 
+              page={page} 
+              onChange={(p) => setPage(p)} 
+              color="danger"
+              size="sm"
+            />
           </div>
         )}
       </div>
     </div>
   );
 }
+

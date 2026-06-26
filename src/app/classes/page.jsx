@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback, useRef, Suspense } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Pagination } from "@heroui/react";`nimport { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClassCard } from "../../componet/Sheard/ClassicCard";
 import {
@@ -18,7 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 
-// ── Category config ──────────────────────────────────────────────────────────
+// â”€â”€ Category config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const categoryConfig = {
   Yoga:     { icon: Sparkles, color: "#f97316" },
   Cardio:   { icon: Heart,    color: "#ef4444" },
@@ -30,7 +30,7 @@ const categoryConfig = {
 const CATEGORIES = Object.keys(categoryConfig);
 const LIMIT = 6;
 
-// ── Skeleton Card ────────────────────────────────────────────────────────────
+// â”€â”€ Skeleton Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SkeletonCard = () => (
   <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#0e1117] border border-gray-200/80 dark:border-white/[0.06] animate-pulse">
     <div className="h-52 bg-gray-200 dark:bg-white/5" />
@@ -52,7 +52,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ── Pagination ───────────────────────────────────────────────────────────────
+// â”€â”€ Pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Pagination = ({ page, totalPages, onChange }) => {
   const pages = [];
   const delta = 2;
@@ -82,7 +82,7 @@ const Pagination = ({ page, totalPages, onChange }) => {
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`dots-${i}`} className="w-10 text-center text-gray-400 dark:text-gray-600 text-sm font-semibold">…</span>
+          <span key={`dots-${i}`} className="w-10 text-center text-gray-400 dark:text-gray-600 text-sm font-semibold">â€¦</span>
         ) : (
           <button
             key={p}
@@ -109,13 +109,13 @@ const Pagination = ({ page, totalPages, onChange }) => {
   );
 };
 
-// ── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ClassesPageInner = () => {
   const router        = useRouter();
   const pathname      = usePathname();
   const searchParams  = useSearchParams();
 
-  // ── Read initial state directly from URL ──────────────────────────────────
+  // â”€â”€ Read initial state directly from URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [searchInput, setSearchInput]       = useState(searchParams.get("search") || "");
   const [classes, setClasses]               = useState([]);
   const [totalPages, setTotalPages]         = useState(1);
@@ -128,7 +128,7 @@ const ClassesPageInner = () => {
   const urlCategory = searchParams.get("category") || "";
   const urlPage     = parseInt(searchParams.get("page") || "1", 10);
 
-  // ── Helper: push updated params to URL ───────────────────────────────────
+  // â”€â”€ Helper: push updated params to URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const pushURL = useCallback(
     ({ search, category, page }) => {
       const params = new URLSearchParams();
@@ -142,7 +142,7 @@ const ClassesPageInner = () => {
     [router, pathname]
   );
 
-  // ── Debounce search input → update URL ───────────────────────────────────
+  // â”€â”€ Debounce search input â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -151,19 +151,19 @@ const ClassesPageInner = () => {
     return () => clearTimeout(debounceRef.current);
   }, [searchInput]);  // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Category toggle → update URL ─────────────────────────────────────────
+  // â”€â”€ Category toggle â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleCategoryClick = (cat) => {
     const next = urlCategory === cat ? "" : cat;
     pushURL({ search: urlSearch, category: next, page: 1 });
   };
 
-  // ── Pagination → update URL ───────────────────────────────────────────────
+  // â”€â”€ Pagination â†’ update URL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handlePageChange = (p) => {
     pushURL({ search: urlSearch, category: urlCategory, page: p });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ── Clear all filters ─────────────────────────────────────────────────────
+  // â”€â”€ Clear all filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const clearAll = () => {
     setSearchInput("");
     router.push(pathname, { scroll: false });
@@ -178,7 +178,7 @@ const ClassesPageInner = () => {
     pushURL({ search: urlSearch, category: "", page: 1 });
   };
 
-  // ── Fetch classes whenever URL params change ──────────────────────────────
+  // â”€â”€ Fetch classes whenever URL params change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading(true);
@@ -213,9 +213,9 @@ const ClassesPageInner = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#060b13] transition-colors duration-300">
 
-      {/* ══════════════════════════════════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           HERO SECTION
-      ═══════════════════════════════════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="relative overflow-hidden bg-white dark:bg-[#060b13] pt-24 pb-20">
 
         {/* Background decorations */}
@@ -284,7 +284,7 @@ const ClassesPageInner = () => {
               book the perfect session for your fitness goals.
             </motion.p>
 
-            {/* ── Search Bar ── */}
+            {/* â”€â”€ Search Bar â”€â”€ */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -299,7 +299,7 @@ const ClassesPageInner = () => {
                 <input
                   type="text"
                   id="class-search"
-                  placeholder="Search by class name…"
+                  placeholder="Search by class nameâ€¦"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="w-full pl-11 pr-12 py-4 text-sm font-medium rounded-2xl bg-white dark:bg-[#0e1117] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/60 shadow-lg dark:shadow-black/30 transition-all duration-200"
@@ -321,7 +321,7 @@ const ClassesPageInner = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-2 text-[11px] text-gray-400 dark:text-gray-600 font-mono text-left px-1 truncate"
                 >
-                  🔗 /classes
+                  ðŸ”— /classes
                   {urlSearch   && <span className="text-orange-500">?search=<span className="text-orange-400">{urlSearch}</span></span>}
                   {urlCategory && <span className="text-purple-500">{urlSearch ? "&" : "?"}category=<span className="text-purple-400">{urlCategory}</span></span>}
                   {urlPage > 1  && <span className="text-blue-400">&amp;page=<span className="text-blue-300">{urlPage}</span></span>}
@@ -329,7 +329,7 @@ const ClassesPageInner = () => {
               )}
             </motion.div>
 
-            {/* ── Category Pill Filters ── */}
+            {/* â”€â”€ Category Pill Filters â”€â”€ */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -374,9 +374,9 @@ const ClassesPageInner = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           RESULTS SECTION
-      ═══════════════════════════════════════════════════════════════════════ */}
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         {/* Results meta row */}
@@ -390,7 +390,7 @@ const ClassesPageInner = () => {
               <>
                 Showing{" "}
                 <span className="font-bold text-gray-900 dark:text-white">
-                  {(urlPage - 1) * LIMIT + 1}–{Math.min(urlPage * LIMIT, totalClasses)}
+                  {(urlPage - 1) * LIMIT + 1}â€“{Math.min(urlPage * LIMIT, totalClasses)}
                 </span>{" "}
                 of{" "}
                 <span className="font-bold text-gray-900 dark:text-white">{totalClasses}</span> classes
@@ -427,7 +427,7 @@ const ClassesPageInner = () => {
           )}
         </div>
 
-        {/* ── Class Grid ── */}
+        {/* â”€â”€ Class Grid â”€â”€ */}
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div
@@ -487,9 +487,9 @@ const ClassesPageInner = () => {
           )}
         </AnimatePresence>
 
-        {/* ── Pagination ── */}
+        {/* â”€â”€ Pagination â”€â”€ */}
         {!loading && totalPages > 1 && (
-          <Pagination page={urlPage} totalPages={totalPages} onChange={handlePageChange} />
+          <div className="flex justify-center mt-14"><Pagination showControls total={totalPages} initialPage={1} page={urlPage} onChange={handlePageChange} color="warning" size="lg" /></div>
         )}
 
         {!loading && totalPages > 1 && (
@@ -502,7 +502,7 @@ const ClassesPageInner = () => {
   );
 };
 
-// Suspense wrapper — required by Next.js when using useSearchParams in a client component
+// Suspense wrapper â€” required by Next.js when using useSearchParams in a client component
 export default function ClassesPage() {
   return (
     <Suspense

@@ -118,9 +118,9 @@ export default function ClassDetailsPage() {
   }
 
   const plates = [
-    { label: "Duration",  value: cls.duration || "60 min",              icon: Clock,  weight: 25 },
+    { label: "Duration", value: cls.duration || "60 min", icon: Clock, weight: 25 },
     { label: "Intensity", value: cls.intensity || cls.level || "All levels", icon: Zap, weight: 35 },
-    { label: "Est. burn", value: cls.caloriesBurn || "500 cal",         icon: Flame,  weight: 45 },
+    { label: "Est. burn", value: cls.caloriesBurn || "500 cal", icon: Flame, weight: 45 },
   ];
   const days = cls.schedule?.days || [];
   const time = cls.schedule?.time || "TBA";
@@ -155,11 +155,10 @@ export default function ClassDetailsPage() {
             transition={{ type: "spring", stiffness: 380, damping: 28 }}
             className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
           >
-            <div className={`px-5 py-3 rounded-lg font-semibold text-sm text-white border-l-4 shadow-lg ${
-              message.type === "error"
-                ? "bg-gray-900 dark:bg-[#1C1C1F] border-red-600"
-                : "bg-gray-900 dark:bg-[#1C1C1F] border-yellow-500"
-            }`}>
+            <div className={`px-5 py-3 rounded-lg font-semibold text-sm text-white border-l-4 shadow-lg ${message.type === "error"
+              ? "bg-gray-900 dark:bg-[#1C1C1F] border-red-600"
+              : "bg-gray-900 dark:bg-[#1C1C1F] border-yellow-500"
+              }`}>
               {message.text}
             </div>
           </motion.div>
@@ -380,30 +379,35 @@ export default function ClassDetailsPage() {
 
               {/* Actions */}
               <div className="px-6 pt-6 pb-6 space-y-3">
-                <button
-                  onClick={handleBookNow}
-                  disabled={isBooked}
-                  className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${
-                    isBooked
-                      ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
-                      : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
-                  }`}
-                >
-                  {isBooked ? (
-                    <><Check className="w-4 h-4" /> Already booked</>
-                  ) : (
-                    <>Book this class <ArrowRight className="w-4 h-4" /></>
-                  )}
-                </button>
+
+                <form action="/api/checkout_sessions" method="POST">
+                  <section>
+
+                    <button
+                      onClick={handleBookNow} type="submit" role="link"
+                      disabled={isBooked}
+                      className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${isBooked
+                        ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
+                        : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
+                        }`}
+                    >
+                      {isBooked ? (
+                        <><Check className="w-4 h-4" /> Already booked</>
+                      ) : (
+                        <>Book this class <ArrowRight className="w-4 h-4" /></>
+                      )}
+                    </button>
+
+                  </section>
+                </form>
 
                 <button
                   onClick={handleToggleFavorite}
                   disabled={actionLoading}
-                  className={`fav-btn w-full py-3.5 rounded-lg font-semibold text-sm border flex justify-center items-center gap-2 transition-all ${
-                    isFavorited
-                      ? "bg-yellow-50 dark:bg-[#D4AF37]/10 border-yellow-400 dark:border-[#D4AF37]/40 text-yellow-700 dark:text-[#D4AF37]"
-                      : "bg-transparent border-gray-200 dark:border-white/15 text-gray-600 dark:text-[#b8b6ae] hover:border-gray-400 dark:hover:border-white/30"
-                  }`}
+                  className={`fav-btn w-full py-3.5 rounded-lg font-semibold text-sm border flex justify-center items-center gap-2 transition-all ${isFavorited
+                    ? "bg-yellow-50 dark:bg-[#D4AF37]/10 border-yellow-400 dark:border-[#D4AF37]/40 text-yellow-700 dark:text-[#D4AF37]"
+                    : "bg-transparent border-gray-200 dark:border-white/15 text-gray-600 dark:text-[#b8b6ae] hover:border-gray-400 dark:hover:border-white/30"
+                    }`}
                 >
                   {actionLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

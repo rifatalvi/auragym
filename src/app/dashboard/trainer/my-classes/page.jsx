@@ -11,6 +11,9 @@ export default function MyClassesPage() {
 
   // Modals state
   const [editingClass, setEditingClass] = useState(null);
+  const [deletingClass, setDeletingClass] = useState(null);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [viewingAttendees, setViewingAttendees] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [attendeesLoading, setAttendeesLoading] = useState(false);
@@ -34,16 +37,27 @@ export default function MyClassesPage() {
     if (!isPending) fetchClasses();
   }, [session, isPending]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this class? This cannot be undone.")) return;
+  const confirmDelete = async (e) => {
+    e.preventDefault();
+    if (!deletingClass) return;
+    setDeleteLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/classes/${id}`, { method: "DELETE" });
+      // In a real scenario, the reason could be sent to the backend for logging
+      // e.g. body: JSON.stringify({ reason: deleteReason })
+      const res = await fetch(`http://localhost:5000/api/classes/${deletingClass._id}`, { 
+        method: "DELETE" 
+      });
+      
       if (res.ok) {
-        setClasses(classes.filter((c) => c._id !== id));
+        setClasses(classes.filter((c) => c._id !== deletingClass._id));
+        setDeletingClass(null);
+        setDeleteReason("");
       }
     } catch (err) {
       console.error("Failed to delete class:", err);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -123,8 +137,21 @@ export default function MyClassesPage() {
                 classes.map((cls) => (
                   <tr key={cls._id} className="hover:bg-gray-50/60 dark:hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-4">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} | ${cls.price}</p>
+                      <div className="flex items-center gap-3">
+                        {cls.image ? (
+                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1]">
+                            <img src={cls.image} alt={cls.className} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.05] flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-white/[0.1]">
+                            <MdLibraryBooks className="text-gray-400" size={20} />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} | ${cls.price}</p>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-xs font-medium text-gray-600 dark:text-gray-300">
@@ -157,7 +184,7 @@ export default function MyClassesPage() {
                           <MdEdit size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(cls._id)}
+                          onClick={() => setDeletingClass(cls)}
                           className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >
@@ -287,6 +314,59 @@ export default function MyClassesPage() {
               <button onClick={() => setViewingAttendees(null)} className="px-5 py-2 rounded-xl font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] hover:bg-gray-100 dark:hover:bg-white/[0.1] transition-colors">
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingClass && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#120010] rounded-2xl max-w-md w-full border border-gray-100 dark:border-white/[0.06] shadow-xl overflow-hidden">
+            <div className="p-6">
+              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center mb-4">
+                <MdDelete className="text-red-600 dark:text-red-400" size={24} />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Class</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                Are you sure you want to delete <span className="font-bold text-gray-700 dark:text-gray-200">{deletingClass.className || deletingClass.name}</span>? This action cannot be undone.
+              </p>
+
+              <form onSubmit={confirmDelete}>
+                <div className="space-y-2 mb-6">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Reason for deletion (Optional)</label>
+                  <textarea
+                    rows="3"
+                    value={deleteReason}
+                    onChange={(e) => setDeleteReason(e.target.value)}
+                    placeholder="e.g., No longer offering this class, schedule conflicts..."
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.1] bg-gray-50 dark:bg-white/[0.02] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 text-sm"
+                  ></textarea>
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button 
+                    type="button" 
+                    onClick={() => { setDeletingClass(null); setDeleteReason(""); }} 
+                    disabled={deleteLoading}
+                    className="px-4 py-2 rounded-xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={deleteLoading}
+                    className="px-4 py-2 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-md shadow-red-600/20 disabled:opacity-70 flex items-center gap-2"
+                  >
+                    {deleteLoading ? (
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    ) : (
+                      <MdDelete size={16} />
+                    )}
+                    Confirm Delete
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

@@ -89,7 +89,7 @@ export default function ManageForumPostsPage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/forum");
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/forum");
       if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
       setPosts(data.posts || data || []);
@@ -116,7 +116,7 @@ export default function ManageForumPostsPage() {
       "Are you sure you want to delete this forum post? This action cannot be undone and the post will be permanently removed.",
       async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/forum/${postId}`, {
+          const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/forum/${postId}`, {
             method: "DELETE",
           });
           if (!res.ok) throw new Error("Failed to delete post");

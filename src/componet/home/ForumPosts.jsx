@@ -38,7 +38,7 @@ export default function ForumPosts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/forum/latest')
+    fetch(process.env.NEXT_PUBLIC_API_URL/api/forum/latest')
       .then((r) => r.json())
       .then((data) => {
         setPosts(data);

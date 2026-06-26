@@ -32,7 +32,7 @@ export default function UserOverviewPage() {
     const fetchStats = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${session.user.email}/stats`);
+        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.email}/stats`);
         if (res.ok) {
           const data = await res.json();
           setStats(data);

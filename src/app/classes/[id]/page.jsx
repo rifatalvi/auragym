@@ -30,7 +30,7 @@ export default function ClassDetailsPage() {
   useEffect(() => {
     const fetchClassDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/classes/${id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}`);
         if (!res.ok) throw new Error("Failed to fetch class details");
         const data = await res.json();
         setCls(data);
@@ -48,8 +48,8 @@ export default function ClassDetailsPage() {
       if (!session?.user?.id || !id) return;
       try {
         const [bookingRes, favRes] = await Promise.all([
-          fetch(`http://localhost:5000/api/bookings/check?classId=${id}&userId=${session.user.id}`),
-          fetch(`http://localhost:5000/api/favorites/check?classId=${id}&userId=${session.user.id}`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/check?classId=${id}&userId=${session.user.id}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${id}&userId=${session.user.id}`)
         ]);
         if (bookingRes.ok) setIsBooked((await bookingRes.json()).isBooked);
         if (favRes.ok) setIsFavorited((await favRes.json()).isFavorited);
@@ -79,7 +79,7 @@ export default function ClassDetailsPage() {
     }
     setActionLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/favorites/toggle", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId: id, userId: session.user.id })

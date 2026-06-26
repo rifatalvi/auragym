@@ -12,7 +12,7 @@ export default function PostDetailsPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/forum/${postId}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`)
       .then((res) => res.json())
       .then((data) => {
         setPost(data);

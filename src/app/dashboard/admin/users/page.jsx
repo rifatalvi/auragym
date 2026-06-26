@@ -137,7 +137,7 @@ export default function ManageUsersPage() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
       const res = await fetch(apiUrl + '/api/admin/users?page=' + page + '&limit=5&search=' + search + '&role=' + roleFilter);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
@@ -166,7 +166,7 @@ export default function ManageUsersPage() {
       'Are you sure you want to ' + action.toLowerCase() + ' this user?',
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
           const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/block', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ export default function ManageUsersPage() {
       'Are you sure you want to change this user role to ' + newRole + '?',
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL';
           const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/role', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },

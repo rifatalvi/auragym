@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import { useSession } from "@/lib/auth-client";
@@ -68,7 +68,7 @@ export default function AddForumPostPage() {
         role: session.user.role || "admin",
       };
 
-      const res = await fetch("http://localhost:5000/api/forum", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/forum", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

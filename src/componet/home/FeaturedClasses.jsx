@@ -21,7 +21,7 @@ export default function FeaturedClasses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/featured-classes')
+    fetch(process.env.NEXT_PUBLIC_API_URL/api/featured-classes')
       .then((r) => r.json())
       .then((data) => { setClasses(data); setLoading(false); })
       .catch(() => setLoading(false));

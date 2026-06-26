@@ -22,7 +22,7 @@ const DashboardLayout = ({children}) => {
             }
 
             try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
                 const res = await fetch(`${apiUrl}/api/users/${session.user.email}/stats`);
                 if (res.ok) {
                     const data = await res.json();

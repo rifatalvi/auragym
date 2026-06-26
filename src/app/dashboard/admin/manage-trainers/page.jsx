@@ -88,7 +88,7 @@ export default function ManageTrainersPage() {
   const fetchTrainers = useCallback(async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
       // We assume passing role=trainer returns only trainers
       const res = await fetch(`${apiUrl}/api/admin/users?page=${page}&limit=5&search=${search}&role=trainer`);
       if (!res.ok) throw new Error("Failed to fetch trainers");
@@ -123,7 +123,7 @@ export default function ManageTrainersPage() {
       "Are you sure you want to demote this trainer to a regular user? They will lose all trainer privileges.",
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
           const res = await fetch(`${apiUrl}/api/admin/users/${userId}/role`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },

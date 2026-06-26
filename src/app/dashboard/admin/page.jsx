@@ -48,7 +48,7 @@ export default function AdminOverviewPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(`${apiUrl}/api/admin/stats`);
         if (res.ok) {
           const data = await res.json();

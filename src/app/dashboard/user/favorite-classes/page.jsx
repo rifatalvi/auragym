@@ -21,7 +21,7 @@ export default function FavoriteClassesPage() {
     const fetchFavorites = async () => {
       if (!session?.user?.id) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${session.user.id}/favorites`);
+        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.id}/favorites`);
         if (res.ok) {
           const data = await res.json();
           setFavorites(data);
@@ -39,7 +39,7 @@ export default function FavoriteClassesPage() {
     if (!session?.user?.id) return;
     setRemovingId(classId);
     try {
-      const res = await fetch("http://localhost:5000/api/favorites/toggle", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/favorites/toggle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId, userId: session.user.id })

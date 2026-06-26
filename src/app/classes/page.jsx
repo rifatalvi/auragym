@@ -134,7 +134,7 @@ const ClassesPageInner = () => {
         if (urlSearch)   params.set("search",   urlSearch);
         if (urlCategory) params.set("category", urlCategory);
 
-        const res  = await fetch(`http://localhost:5000/api/classes?${params}`);
+        const res  = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/classes?${params}`);
         const data = await res.json();
 
         if (res.ok) {

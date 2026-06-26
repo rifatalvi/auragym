@@ -18,7 +18,7 @@ export default function MyForumPostsPage() {
   const fetchPosts = async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch("http://localhost:5000/api/forum");
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL/api/forum");
       const data = await res.json();
       
       // Filter posts by logged-in trainer's email or name
@@ -40,7 +40,7 @@ export default function MyForumPostsPage() {
 
     setDeleteLoading(postId);
     try {
-      const res = await fetch(`http://localhost:5000/api/forum/${postId}`, {
+      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/forum/${postId}`, {
         method: "DELETE",
       });
 

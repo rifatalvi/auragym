@@ -10,7 +10,7 @@ export default function CommunityForumPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/forum')
+    fetch(process.env.NEXT_PUBLIC_API_URL/api/forum')
       .then((res) => res.json())
       .then((data) => {
         setPosts(data.posts || []);

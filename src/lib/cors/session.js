@@ -15,7 +15,9 @@ export const RequireRole = async (role) => {
     if(!user) {
         redirect("/auth/signin");
     }
-    if(user?.role !== role) {
+    // Accept a single role string or an array of roles
+    const allowedRoles = Array.isArray(role) ? role : [role];
+    if(!allowedRoles.includes(user?.role)) {
         redirect("/unauthorized");
     }
 

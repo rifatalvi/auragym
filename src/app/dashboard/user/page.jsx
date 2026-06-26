@@ -10,7 +10,9 @@ import {
   MdPendingActions, 
   MdCancel,
   MdMail,
-  MdBadge
+  MdBadge,
+  MdWorkspacePremium,
+  MdArrowForward
 } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
@@ -82,6 +84,55 @@ export default function UserOverviewPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome back, {user?.name?.split(' ')[0]}! 👋</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base">Here's what's happening with your fitness journey today.</p>
       </motion.div>
+
+      {/* ── Member Upgrade Banner (for plain users) ── */}
+      {user?.role === 'user' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700/40 rounded-2xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+              <MdWorkspacePremium className="text-amber-600 dark:text-amber-400" size={22} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-amber-900 dark:text-amber-200">Upgrade to Member</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                Book at least <span className="font-bold">1 class</span> to unlock your Member status and full benefits!
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/classes"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+          >
+            Browse Classes <MdArrowForward size={14} />
+          </Link>
+        </motion.div>
+      )}
+
+      {/* ── Member Badge Banner (for members) ── */}
+      {user?.role === 'member' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-700/40 rounded-2xl px-6 py-4 flex items-center gap-4"
+        >
+          <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+            <MdWorkspacePremium className="text-emerald-600 dark:text-emerald-400" size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200">Active Member</p>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider">VERIFIED</span>
+            </div>
+            <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">
+              You&apos;re an AuraGym member! Enjoy full access to all your booked classes.
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div 
         variants={containerVariants}
@@ -223,10 +274,17 @@ export default function UserOverviewPage() {
 
             {/* Role Badge */}
             <div className="mt-4 mb-6">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.10] text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
-                <MdBadge size={14} className="text-gray-400" />
-                {user?.role || "User"}
-              </span>
+              {user?.role === 'member' ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-500/20 dark:to-teal-500/20 border border-emerald-300 dark:border-emerald-500/40 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                  <MdWorkspacePremium size={14} className="text-emerald-500" />
+                  Member
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.10] text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                  <MdBadge size={14} className="text-gray-400" />
+                  {user?.role || "User"}
+                </span>
+              )}
             </div>
 
             <div className="w-full h-px bg-gray-100 dark:bg-white/[0.05] my-2"></div>

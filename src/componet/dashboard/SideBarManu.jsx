@@ -39,6 +39,7 @@ export default function SideBarManu() {
     { icon: MdCalendarToday, href: "/dashboard/user/booked-classes", label: "Booked Classes" },
     { icon: MdSchool, href: "/dashboard/user/apply-trainer", label: "Apply as Trainer" },
     { icon: MdFavorite, href: "/dashboard/user/favorite-classes", label: "Favorite Classes" },
+    { icon: MdCreditCard, href: "/dashboard/user/transactions", label: "Transactions" },
   ];
 
   const trainerNavItems = [
@@ -62,6 +63,7 @@ export default function SideBarManu() {
 
   const sidebarItems = {
     user: userNavItems,
+    member: userNavItems, // member sees the same as user
     trainer: trainerNavItems,
     admin: adminNavItems,
   };

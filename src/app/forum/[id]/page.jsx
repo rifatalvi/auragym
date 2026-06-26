@@ -1,16 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MessageSquare, ThumbsUp, Clock, User, Tag } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PostDetailsPage({ params }) {
+  const unwrappedParams = use(params);
+  const postId = unwrappedParams.id;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/forum/${params.id}`)
+    fetch(`http://localhost:5000/api/forum/${postId}`)
       .then((res) => res.json())
       .then((data) => {
         setPost(data);
@@ -20,7 +22,7 @@ export default function PostDetailsPage({ params }) {
         console.error(err);
         setLoading(false);
       });
-  }, [params.id]);
+  }, [postId]);
 
   if (loading) {
     return (

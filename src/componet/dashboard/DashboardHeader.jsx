@@ -15,6 +15,7 @@ const ALL_MENU_ITEMS = [
   { label: "Booked Classes", href: "/dashboard/user/booked-classes", role: "user" },
   { label: "Apply as Trainer", href: "/dashboard/user/apply-trainer", role: "user" },
   { label: "Favorite Classes", href: "/dashboard/user/favorite-classes", role: "user" },
+  { label: "Transactions", href: "/dashboard/user/transactions", role: "user" },
 
   { label: "Overview", href: "/dashboard/trainer", role: "trainer" },
   { label: "Add Class", href: "/dashboard/trainer/add-class", role: "trainer" },
@@ -72,7 +73,8 @@ export default function DashboardHeader() {
       return;
     }
 
-    const roleItems = ALL_MENU_ITEMS.filter((item) => item.role === userRole);
+    const effectiveRole = userRole === "member" ? "user" : userRole;
+    const roleItems = ALL_MENU_ITEMS.filter((item) => item.role === effectiveRole);
     const filtered = roleItems.filter((item) =>
       item.label.toLowerCase().includes(query.toLowerCase())
     );

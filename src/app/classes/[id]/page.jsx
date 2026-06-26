@@ -60,7 +60,8 @@ export default function ClassDetailsPage() {
     fetchUserStatus();
   }, [id, session?.user?.id]);
 
-  const handleBookNow = () => {
+  const handleBookNow = async (e) => {
+    if (e) e.preventDefault();
     if (!session?.user) {
       showMessage("Please log in to book classes.", "error");
       setTimeout(() => router.push("/auth/signup"), 1500);
@@ -380,26 +381,20 @@ export default function ClassDetailsPage() {
               {/* Actions */}
               <div className="px-6 pt-6 pb-6 space-y-3">
 
-                <form action="/api/checkout_sessions" method="POST">
-                  <section>
-
-                    <button
-                      onClick={handleBookNow} type="submit" role="link"
-                      disabled={isBooked}
-                      className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${isBooked
-                        ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
-                        : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
-                        }`}
-                    >
-                      {isBooked ? (
-                        <><Check className="w-4 h-4" /> Already booked</>
-                      ) : (
-                        <>Book this class <ArrowRight className="w-4 h-4" /></>
-                      )}
-                    </button>
-
-                  </section>
-                </form>
+                <button
+                  onClick={handleBookNow}
+                  disabled={isBooked}
+                  className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${isBooked
+                    ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
+                    : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
+                    }`}
+                >
+                  {isBooked ? (
+                    <><Check className="w-4 h-4" /> Already booked</>
+                  ) : (
+                    <>Book this class <ArrowRight className="w-4 h-4" /></>
+                  )}
+                </button>
 
                 <button
                   onClick={handleToggleFavorite}

@@ -381,20 +381,57 @@ export default function ClassDetailsPage() {
               {/* Actions */}
               <div className="px-6 pt-6 pb-6 space-y-3">
 
-                <button
-                  onClick={handleBookNow}
-                  disabled={isBooked}
-                  className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${isBooked
-                    ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
-                    : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
-                    }`}
-                >
-                  {isBooked ? (
-                    <><Check className="w-4 h-4" /> Already booked</>
-                  ) : (
-                    <>Book this class <ArrowRight className="w-4 h-4" /></>
-                  )}
-                </button>
+                {/* Spots remaining indicator */}
+                {cls.maxStudents && (
+                  <div className="mb-1">
+                    {(() => {
+                      const booked = cls.bookingCount || 0;
+                      const max = cls.maxStudents;
+                      const remaining = Math.max(0, max - booked);
+                      const pct = Math.min(100, Math.round((booked / max) * 100));
+                      const isFull = remaining === 0;
+                      return (
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-semibold">
+                            <span className={isFull ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}>
+                              {isFull ? '🔴 Class Full' : `${remaining} spot${remaining !== 1 ? 's' : ''} left`}
+                            </span>
+                            <span className="text-gray-400">{booked}/{max} enrolled</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${isFull ? 'bg-red-500' : pct >= 80 ? 'bg-orange-500' : 'bg-emerald-500'}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {(() => {
+                  const isFull = cls.maxStudents && (cls.bookingCount || 0) >= cls.maxStudents;
+                  return (
+                    <button
+                      onClick={handleBookNow}
+                      disabled={isBooked || isFull}
+                      className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${
+                        isBooked || isFull
+                          ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
+                          : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
+                      }`}
+                    >
+                      {isBooked ? (
+                        <><Check className="w-4 h-4" /> Already booked</>
+                      ) : isFull ? (
+                        <><Check className="w-4 h-4" /> Class Full</>
+                      ) : (
+                        <>Book this class <ArrowRight className="w-4 h-4" /></>
+                      )}
+                    </button>
+                  );
+                })()}
 
                 <button
                   onClick={handleToggleFavorite}

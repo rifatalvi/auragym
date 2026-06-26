@@ -18,6 +18,7 @@ export default function AddClassPage() {
     category: "Yoga",
     level: "Beginner",
     duration: "60",
+    maxStudents: "20",
     days: "Monday, Wednesday",
     time: "10:00 AM",
     price: "",
@@ -78,7 +79,8 @@ export default function AddClassPage() {
         price: formData.price,
         description: formData.description,
         trainerEmail: session.user.email,
-        status: "Pending", // explicitly set as per requirements
+        maxStudents: parseInt(formData.maxStudents) || 20,
+        status: "Pending",
       };
 
       const res = await fetch("http://localhost:5000/api/classes", {
@@ -231,6 +233,25 @@ export default function AddClassPage() {
               placeholder="25.00"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
             />
+          </div>
+
+          {/* Max Students */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Max Students <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="maxStudents"
+              required
+              min="1"
+              max="500"
+              value={formData.maxStudents}
+              onChange={handleChange}
+              placeholder="e.g. 20"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            />
+            <p className="text-[11px] text-gray-400">Booking will be closed automatically when this limit is reached.</p>
           </div>
 
           {/* Schedule: Days */}

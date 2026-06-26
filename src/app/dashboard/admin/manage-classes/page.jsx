@@ -11,6 +11,19 @@ import Image from "next/image";
 
 const LIMIT = 10;
 
+const STATUS_FILTERS = [
+  { label: "All",      value: "all",      color: "gray"   },
+  { label: "Pending",  value: "pending",  color: "yellow" },
+  { label: "Approved", value: "approved", color: "green"  },
+  { label: "Rejected", value: "rejected", color: "red"    },
+];
+
+const VISIBILITY_FILTERS = [
+  { label: "Any",    value: "all"    },
+  { label: "Open",   value: "open"   },
+  { label: "Closed", value: "closed" },
+];
+
 export default function ManageClassesPage() {
   const { data: session, isPending } = useSession();
   const [classes, setClasses] = useState([]);
@@ -20,10 +33,18 @@ export default function ManageClassesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const fetchClasses = useCallback(async (pageNum = 1) => {
+  // Filter state
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
+
+  const fetchClasses = useCallback(async (pageNum = 1, status = statusFilter, visibility = visibilityFilter) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/classes?page=${pageNum}&limit=${LIMIT}`);
+      const params = new URLSearchParams({ page: pageNum, limit: LIMIT });
+      if (status !== "all") params.set("status", status);
+      if (visibility !== "all") params.set("visibility", visibility);
+
+      const res = await fetch(`http://localhost:5000/api/admin/classes?${params}`);
       if (res.ok) {
         const data = await res.json();
         setClasses(data.classes);
@@ -36,7 +57,7 @@ export default function ManageClassesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [statusFilter, visibilityFilter]);
 
   useEffect(() => {
     if (!isPending) fetchClasses(1);

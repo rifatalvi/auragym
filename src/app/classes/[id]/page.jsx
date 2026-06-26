@@ -412,12 +412,21 @@ export default function ClassDetailsPage() {
 
                 {(() => {
                   const isFull = cls.maxStudents && (cls.bookingCount || 0) >= cls.maxStudents;
+                  const isOwnClass = session?.user?.email && cls.trainerEmail && session.user.email === cls.trainerEmail;
+                  
                   return (
                     <button
-                      onClick={handleBookNow}
-                      disabled={isBooked || isFull}
+                      onClick={(e) => {
+                        if (isOwnClass) {
+                          e.preventDefault();
+                          showMessage("You cannot book your own class.", "error");
+                          return;
+                        }
+                        handleBookNow(e);
+                      }}
+                      disabled={isBooked || isFull || isOwnClass}
                       className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${
-                        isBooked || isFull
+                        isBooked || isFull || isOwnClass
                           ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
                           : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
                       }`}
@@ -426,6 +435,8 @@ export default function ClassDetailsPage() {
                         <><Check className="w-4 h-4" /> Already booked</>
                       ) : isFull ? (
                         <><Check className="w-4 h-4" /> Class Full</>
+                      ) : isOwnClass ? (
+                        <><Check className="w-4 h-4" /> Your Class</>
                       ) : (
                         <>Book this class <ArrowRight className="w-4 h-4" /></>
                       )}

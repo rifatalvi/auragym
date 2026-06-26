@@ -7,24 +7,36 @@ import { MdDashboard, MdTrendingUp, MdGroup, MdOutlineStar, MdOutlineClass, MdPe
 export default function TrainerOverviewPage() {
   const { data: session, isPending } = useSession();
   const [classes, setClasses] = useState([]);
+  const [earnings, setEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchDashboardData = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/trainer/${session.user.email}/classes`);
-        if (res.ok) {
-          const data = await res.json();
-          setClasses(data);
+        const [classesRes, bookingsRes] = await Promise.all([
+          fetch(`http://localhost:5000/api/trainer/${session.user.email}/classes`),
+          fetch(`http://localhost:5000/api/trainer/${session.user.email}/bookings`)
+        ]);
+
+        if (classesRes.ok) {
+          const classesData = await classesRes.json();
+          setClasses(classesData);
         }
+
+        if (bookingsRes.ok) {
+          const bookingsData = await bookingsRes.json();
+          const totalEarnings = bookingsData.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+          setEarnings(totalEarnings);
+        }
+
       } catch (err) {
-        console.error("Failed to fetch classes:", err);
+        console.error("Failed to fetch dashboard data:", err);
       } finally {
         setLoading(false);
       }
     };
-    if (!isPending) fetchClasses();
+    if (!isPending) fetchDashboardData();
   }, [session, isPending]);
 
   if (isPending || loading) {
@@ -75,10 +87,10 @@ export default function TrainerOverviewPage() {
       </div>
 
       {/* Statistics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-red-500 to-rose-600 dark:from-red-900 dark:to-rose-900 rounded-2xl p-6 sm:p-8 shadow-lg shadow-red-500/20 text-white flex items-center justify-between">
           <div>
-            <p className="text-red-100 font-medium text-sm sm:text-base mb-1">Total Classes Created</p>
+            <p className="text-red-100 font-medium text-sm sm:text-base mb-1">Total Classes</p>
             <h3 className="text-4xl sm:text-5xl font-black">{totalClasses}</h3>
           </div>
           <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
@@ -88,11 +100,21 @@ export default function TrainerOverviewPage() {
 
         <div className="bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-900 dark:to-indigo-900 rounded-2xl p-6 sm:p-8 shadow-lg shadow-blue-500/20 text-white flex items-center justify-between">
           <div>
-            <p className="text-blue-100 font-medium text-sm sm:text-base mb-1">Total Students Enrolled</p>
+            <p className="text-blue-100 font-medium text-sm sm:text-base mb-1">Students Enrolled</p>
             <h3 className="text-4xl sm:text-5xl font-black">{totalStudents}</h3>
           </div>
           <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
             <MdPeopleOutline size={32} />
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 dark:from-emerald-900 dark:to-teal-900 rounded-2xl p-6 sm:p-8 shadow-lg shadow-emerald-500/20 text-white flex items-center justify-between">
+          <div>
+            <p className="text-emerald-100 font-medium text-sm sm:text-base mb-1">Total Earnings</p>
+            <h3 className="text-4xl sm:text-5xl font-black">${earnings.toFixed(2)}</h3>
+          </div>
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+            <span className="text-3xl font-black">$</span>
           </div>
         </div>
       </div>

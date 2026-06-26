@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import CustomPagination from "@/componet/Sheard/CustomPagination";
-import { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
+import { Search, Trash2, MessageSquare, CheckCircle, AlertCircle, X } from "lucide-react";
 import Image from "next/image";
 
 function Toast({ toasts, removeToast }) {
@@ -53,14 +53,15 @@ function ConfirmModal({ data, onConfirm, onCancel }) {
   );
 }
 
-export default function ManageTrainersPage() {
-  const [trainers, setTrainers] = useState([]);
+export default function ManageForumPostsPage() {
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  
+  // Client-side pagination since API returns all posts
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
-  const [stats, setStats] = useState({ totalTrainers: 0 });
+  const itemsPerPage = 8;
 
   const [toasts, setToasts] = useState([]);
   const [confirmData, setConfirmData] = useState(null);
@@ -84,67 +85,67 @@ export default function ManageTrainersPage() {
     setPendingAction(null);
   };
 
-  const fetchTrainers = useCallback(async () => {
+  const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      // We assume passing role=trainer returns only trainers
-      const res = await fetch(`${apiUrl}/api/admin/users?page=${page}&limit=5&search=${search}&role=trainer`);
-      if (!res.ok) throw new Error("Failed to fetch trainers");
+      const res = await fetch("http://localhost:5000/api/forum");
+      if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
-      setTrainers(data.users || []);
-      setTotalPages(data.totalPages || 1);
-      setStats({ totalTrainers: data.summaryStats?.total || (data.users || []).length });
+      setPosts(data.posts || data || []);
     } catch (err) {
       console.error(err);
-      setFetchError("Failed to fetch trainers");
+      setFetchError("Failed to load forum posts");
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   // Reset to page 1 only when search query changes
   useEffect(() => {
     setPage(1);
   }, [search]);
 
-  // Fetch data with a slight debounce
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      fetchTrainers();
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [fetchTrainers]);
-
-  const handleDemote = (userId) => {
+  const handleDelete = (postId) => {
     showConfirm(
-      "Demote Trainer",
-      "Are you sure you want to demote this trainer to a regular user? They will lose all trainer privileges.",
+      "Delete Post",
+      "Are you sure you want to delete this forum post? This action cannot be undone and the post will be permanently removed.",
       async () => {
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-          const res = await fetch(`${apiUrl}/api/admin/users/${userId}/role`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: "user" }),
+          const res = await fetch(`http://localhost:5000/api/forum/${postId}`, {
+            method: "DELETE",
           });
-          if (!res.ok) throw new Error("Failed to demote trainer");
-          addToast("Trainer demoted to user successfully", "success");
-          fetchTrainers();
+          if (!res.ok) throw new Error("Failed to delete post");
+          addToast("Post deleted successfully", "success");
+          fetchPosts(); // Refresh list after deletion
         } catch (err) {
           console.error(err);
-          addToast("Failed to demote trainer", "error");
+          addToast("Failed to delete post", "error");
         }
       }
     );
   };
+
+  // Filter posts based on search query
+  const filteredPosts = posts.filter(post => 
+    (post.title || "").toLowerCase().includes(search.toLowerCase()) || 
+    (post.author || "").toLowerCase().includes(search.toLowerCase()) ||
+    (post.authorEmail || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
+  const currentPosts = filteredPosts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   if (fetchError) {
     return (
       <div className="text-center p-8 m-6 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl">
         <AlertCircle size={40} className="text-red-500 dark:text-red-400 mx-auto mb-3" />
         <h3 className="text-lg font-bold text-red-600 dark:text-red-400">{fetchError}</h3>
-        <button onClick={fetchTrainers} className="mt-4 px-6 py-2 rounded-xl bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 text-red-700 dark:text-red-300 font-semibold border border-red-200 dark:border-red-500/30 transition-colors">
+        <button onClick={fetchPosts} className="mt-4 px-6 py-2 rounded-xl bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 text-red-700 dark:text-red-300 font-semibold border border-red-200 dark:border-red-500/30 transition-colors">
           Try Again
         </button>
       </div>
@@ -160,16 +161,16 @@ export default function ManageTrainersPage() {
         {/* Header & Stats */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white dark:bg-[#0d1421] p-6 rounded-2xl border border-gray-200 dark:border-white/8 gap-6 shadow-sm dark:shadow-xl">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Manage Trainers</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Manage Forum Posts</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-md text-sm leading-relaxed">
-              View and manage active trainers on the platform. You can demote them if necessary.
+              Moderate community posts. Remove any inappropriate or spam content from the platform.
             </p>
           </div>
-          <div className="flex items-center gap-3 px-5 py-4 rounded-xl border bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-100 dark:border-cyan-500/20 min-w-[160px]">
-            <div className="opacity-80"><Users size={24} /></div>
+          <div className="flex items-center gap-3 px-5 py-4 rounded-xl border bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20 min-w-[160px]">
+            <div className="opacity-80"><MessageSquare size={24} /></div>
             <div>
-              <p className="text-xs opacity-70 font-semibold uppercase tracking-wide">Total Trainers</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalTrainers}</p>
+              <p className="text-xs opacity-70 font-semibold uppercase tracking-wide">Total Posts</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{posts.length}</p>
             </div>
           </div>
         </div>
@@ -180,8 +181,8 @@ export default function ManageTrainersPage() {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search trainers by name or email..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+              placeholder="Search posts by title or author..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500/50 transition-colors"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -194,65 +195,69 @@ export default function ManageTrainersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-white/8">
-                  <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Trainer Details</th>
-                  <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Post Details</th>
+                  <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Author</th>
+                  <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Date</th>
                   <th className="px-6 py-3.5 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                {loading && trainers.length === 0 ? (
+                {loading && posts.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="text-center py-16">
+                    <td colSpan="4" className="text-center py-16">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
-                        <span className="text-gray-500 text-sm">Loading trainers...</span>
+                        <div className="w-8 h-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+                        <span className="text-gray-500 text-sm">Loading posts...</span>
                       </div>
                     </td>
                   </tr>
-                ) : trainers.length === 0 ? (
+                ) : currentPosts.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="text-center py-16">
+                    <td colSpan="4" className="text-center py-16">
                       <div className="flex flex-col items-center gap-3">
                         <Search size={44} className="text-gray-300 dark:text-gray-600" />
-                        <p className="text-gray-500 dark:text-gray-400 font-semibold">No trainers found</p>
+                        <p className="text-gray-500 dark:text-gray-400 font-semibold">No posts found</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
-                  trainers.map((trainer) => (
-                    <tr key={trainer._id} className="hover:bg-gray-50 dark:hover:bg-white/3 transition-colors">
+                  currentPosts.map((post) => (
+                    <tr key={post._id} className="hover:bg-gray-50 dark:hover:bg-white/3 transition-colors group">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="relative h-11 w-11 rounded-full overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 shrink-0">
-                            {trainer.image ? (
-                              <Image src={trainer.image} alt={trainer.name} fill className="object-cover" />
+                        <div className="flex items-start gap-4">
+                          <div className="relative h-14 w-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 shrink-0">
+                            {post.image ? (
+                              <Image src={post.image} alt={post.title} fill className="object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-lg">
-                                {(trainer.name || trainer.email).charAt(0).toUpperCase()}
+                              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/5 text-gray-400">
+                                <MessageSquare size={20} />
                               </div>
                             )}
                           </div>
-                          <div>
-                            <div className="font-semibold text-gray-900 dark:text-white text-sm">{trainer.name || "N/A"}</div>
-                            <div className="text-xs text-gray-500">{trainer.email}</div>
+                          <div className="max-w-[300px]">
+                            <div className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1 mb-1">{post.title || "Untitled"}</div>
+                            <div className="text-xs text-gray-500 line-clamp-2">{post.content || post.description || "No description provided."}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-500/20">
-                          <Users size={11} />
-                          Trainer
+                        <div className="font-medium text-gray-900 dark:text-white text-sm">{post.author || "Unknown"}</div>
+                        <div className="text-xs text-gray-500">{post.authorEmail || "No email"}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {new Date(post.createdAt || Date.now()).toLocaleDateString()}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex justify-end gap-2 items-center">
+                        <div className="flex justify-end items-center">
                           <button
                             type="button"
-                            onClick={() => handleDemote(trainer._id)}
+                            onClick={() => handleDelete(post._id)}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20"
                           >
-                            <ShieldOff size={13} />
-                            Demote to User
+                            <Trash2 size={13} />
+                            Delete
                           </button>
                         </div>
                       </td>
@@ -267,8 +272,8 @@ export default function ManageTrainersPage() {
               <CustomPagination 
                 page={page} 
                 totalPages={totalPages} 
-                totalItems={stats.totalTrainers}
-                itemsPerPage={5}
+                totalItems={filteredPosts.length}
+                itemsPerPage={itemsPerPage}
                 onChange={(p) => setPage(p)} 
               />
             </div>
@@ -284,4 +289,3 @@ export default function ManageTrainersPage() {
     </>
   );
 }
-

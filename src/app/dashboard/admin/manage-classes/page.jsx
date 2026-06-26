@@ -347,7 +347,7 @@ export default function ManageClassesPage() {
               totalPages={totalPages} 
               totalItems={total} 
               itemsPerPage={LIMIT} 
-              onChange={(p) => setPage(p)} 
+              onChange={(p) => { setPage(p); fetchClasses(p); }}  
             />
           </div>
         )}

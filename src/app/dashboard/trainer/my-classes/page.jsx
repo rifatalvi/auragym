@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { MdLibraryBooks, MdEdit, MdDelete, MdPeople, MdClose, MdCheckCircle, MdCancel, MdPendingActions } from "react-icons/md";
+import Image from "next/image";
 
 export default function MyClassesPage() {
   const { data: session, isPending } = useSession();
@@ -139,8 +140,14 @@ export default function MyClassesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {cls.image ? (
-                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1]">
-                            <img src={cls.image} alt={cls.className} className="w-full h-full object-cover" />
+                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1] relative">
+                            <Image 
+                              src={cls.image} 
+                              alt={cls.className || cls.name || "Class Image"} 
+                              fill 
+                              sizes="40px"
+                              className="object-cover" 
+                            />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.05] flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-white/[0.1]">
@@ -172,9 +179,15 @@ export default function MyClassesPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleViewAttendees(cls._id)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 transition-colors flex items-center gap-1.5"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 transition-colors flex items-center gap-2 group"
+                          title="View enrolled students"
                         >
-                          <MdPeople size={16} /> Students
+                          <MdPeople size={16} /> 
+                          <span>Students</span>
+                          {/* Beautiful booking count badge */}
+                          <span className="flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-blue-200 dark:bg-blue-500/30 text-[10px] text-blue-800 dark:text-blue-200 group-hover:scale-110 transition-transform">
+                            {cls.bookingCount || 0}
+                          </span>
                         </button>
                         <button
                           onClick={() => setEditingClass(cls)}

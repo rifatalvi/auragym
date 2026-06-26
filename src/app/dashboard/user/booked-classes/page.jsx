@@ -12,6 +12,7 @@ import {
 } from "react-icons/md";
 import Link from "next/link";
 import Image from "next/image";
+import { TableRowSkeleton } from "@/componet/Sheard/Skeleton";
 
 export default function BookedClassesPage() {
   const { data: session, isPending } = useSession();
@@ -36,13 +37,6 @@ export default function BookedClassesPage() {
     if (!isPending) fetchBookings();
   }, [session, isPending]);
 
-  if (isPending || loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -72,7 +66,11 @@ export default function BookedClassesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-white/[0.04]">
-              {bookings.length === 0 ? (
+              {(isPending || loading) ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <TableRowSkeleton key={i} cols={4} />
+                ))
+              ) : bookings.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-16 text-center">
                     <div className="w-14 h-14 bg-gray-100 dark:bg-white/[0.04] rounded-full flex items-center justify-center mx-auto mb-3">

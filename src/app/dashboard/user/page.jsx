@@ -16,6 +16,7 @@ import {
 } from "react-icons/md";
 import Image from "next/image";
 import Link from "next/link";
+import { StatCardSkeleton } from "@/componet/Sheard/Skeleton";
 
 export default function UserOverviewPage() {
   const { data: session, isPending } = useSession();
@@ -50,8 +51,10 @@ export default function UserOverviewPage() {
 
   if (isPending || loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => <StatCardSkeleton key={i} />)}
+        </div>
       </div>
     );
   }

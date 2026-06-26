@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Flame, Dumbbell, Shield, Zap, Droplets } from 'lucide-react';
 import { ClassCard } from '../Sheard/ClassicCard';
+import { CardSkeleton } from '../Sheard/Skeleton';
 
 
 const categoryConfig = {
@@ -37,7 +38,7 @@ export default function FeaturedClasses() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => <div key={i} className="h-80 bg-gray-200 dark:bg-white/5 rounded-3xl animate-pulse" />)}
+            {[1, 2, 3].map((i) => <CardSkeleton key={i} />)}
           </div>
         ) : (
           <motion.div 

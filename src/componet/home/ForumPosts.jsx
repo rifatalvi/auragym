@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, ThumbsUp, Clock, Tag, ArrowUpRight, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { ForumPostSkeleton } from '../Sheard/Skeleton';
 
 const categoryColors = {
   Nutrition: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
@@ -93,7 +94,7 @@ export default function ForumPosts() {
         {loading ? (
           <div className="space-y-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-28 rounded-2xl bg-gray-100 dark:bg-gray-900/40 animate-pulse" />
+              <ForumPostSkeleton key={i} />
             ))}
           </div>
         ) : (

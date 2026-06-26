@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import CustomPagination from "@/componet/Sheard/CustomPagination";
+import { ForumManageRowSkeleton } from "@/componet/Sheard/Skeleton";
 import { Search, Trash2, MessageSquare, CheckCircle, AlertCircle, X } from "lucide-react";
 import Image from "next/image";
 
@@ -213,14 +214,9 @@ export default function ManageForumPostsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                 {loading && posts.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-16">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-                        <span className="text-gray-500 text-sm">Loading posts...</span>
-                      </div>
-                    </td>
-                  </tr>
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <ForumManageRowSkeleton key={i} />
+                  ))
                 ) : currentPosts.length === 0 ? (
                   <tr>
                     <td colSpan="4" className="text-center py-16">

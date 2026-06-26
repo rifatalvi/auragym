@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Users, CalendarDays, CheckCircle, ShieldCheck, TrendingUp, Activity } from "lucide-react";
 import { Avatar } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
+import { Skeleton } from "@/componet/Sheard/Skeleton";
 import {
   AreaChart,
   Area,
@@ -104,7 +105,7 @@ export default function AdminOverviewPage() {
           <div>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Total Users</p>
             {loading ? (
-              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <Skeleton className="h-8 w-16" />
             ) : (
               <h3 className="text-4xl font-extrabold text-gray-800">{stats.totalUsers}</h3>
             )}
@@ -118,7 +119,7 @@ export default function AdminOverviewPage() {
           <div>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Total Classes</p>
             {loading ? (
-              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <Skeleton className="h-8 w-16" />
             ) : (
               <h3 className="text-4xl font-extrabold text-gray-800">{stats.totalClasses}</h3>
             )}
@@ -132,7 +133,7 @@ export default function AdminOverviewPage() {
           <div>
             <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Total Bookings</p>
             {loading ? (
-              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <Skeleton className="h-8 w-16" />
             ) : (
               <h3 className="text-4xl font-extrabold text-gray-800">{stats.totalBookings}</h3>
             )}

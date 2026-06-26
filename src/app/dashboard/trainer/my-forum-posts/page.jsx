@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Loader2, Trash2, MessageSquare, AlertCircle } from "lucide-react";
+import { CardSkeleton } from "@/componet/Sheard/Skeleton";
 
 export default function MyForumPostsPage() {
   const { data: session } = useSession();
@@ -58,8 +59,15 @@ export default function MyForumPostsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
+      <div className="w-full space-y-6">
+        <div className="mb-8">
+          <div className="h-5 w-32 bg-gray-200 dark:bg-white/10 rounded-lg animate-pulse mb-4" />
+          <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 rounded-lg animate-pulse mb-2" />
+          <div className="h-4 w-80 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => <CardSkeleton key={i} />)}
+        </div>
       </div>
     );
   }

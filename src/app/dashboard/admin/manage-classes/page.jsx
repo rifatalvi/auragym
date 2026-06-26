@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
 import CustomPagination from "@/componet/Sheard/CustomPagination";
+import { TableRowSkeleton } from "@/componet/Sheard/Skeleton";
 import {
   MdLibraryBooks, MdCheckCircle, MdCancel, MdDelete,
   MdPendingActions, MdChevronLeft, MdChevronRight,
@@ -220,13 +221,9 @@ export default function ManageClassesPage() {
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-white/[0.04]">
               {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
-                    <div className="flex justify-center">
-                      <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 6 }).map((_, i) => (
+                  <TableRowSkeleton key={i} cols={6} />
+                ))
               ) : classes.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-16 text-center">

@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
+import CustomPagination from "@/componet/Sheard/CustomPagination";
 import {
   MdLibraryBooks, MdCheckCircle, MdCancel, MdDelete,
   MdPendingActions, MdChevronLeft, MdChevronRight,
@@ -133,7 +134,7 @@ export default function ManageClassesPage() {
         </div>
       </div>
 
-      {/* â”€â”€ Filter Bar â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Filter Bar Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className="flex flex-wrap gap-4 items-center">
         {/* Status filter */}
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -250,14 +251,14 @@ export default function ManageClassesPage() {
                         )}
                         <div>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
-                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} â€¢ ${cls.price}</p>
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} Ã¢â‚¬Â¢ ${cls.price}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Trainer */}
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || "â€”"}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || "Ã¢â‚¬â€"}</p>
                     </td>
 
                     {/* Category */}
@@ -281,7 +282,7 @@ export default function ManageClassesPage() {
                       </div>
                     </td>
 
-                    {/* Open / Closed Toggle â€” only for Approved classes */}
+                    {/* Open / Closed Toggle Ã¢â‚¬â€ only for Approved classes */}
                     <td className="px-6 py-4">
                       {isApproved(cls) ? (
                         <button
@@ -298,7 +299,7 @@ export default function ManageClassesPage() {
                           {cls.isOpen ? "Open" : "Closed"}
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">â€”</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">Ã¢â‚¬â€</span>
                       )}
                     </td>
 
@@ -343,7 +344,7 @@ export default function ManageClassesPage() {
           <div className="px-6 py-4 border-t border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01] flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
               Page <span className="font-bold text-gray-700 dark:text-gray-300">{page}</span> of{" "}
-              <span className="font-bold text-gray-700 dark:text-gray-300">{totalPages}</span> &nbsp;·&nbsp;{" "}
+              <span className="font-bold text-gray-700 dark:text-gray-300">{totalPages}</span> &nbsp;Â·&nbsp;{" "}
               <span className="font-bold text-gray-700 dark:text-gray-300">{total}</span> total classes
             </p>
             <Pagination 
@@ -361,4 +362,5 @@ export default function ManageClassesPage() {
     </div>
   );
 }
+
 

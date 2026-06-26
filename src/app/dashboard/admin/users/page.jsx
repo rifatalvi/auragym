@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Pagination } from "@heroui/react";
+import CustomPagination from "@/componet/Sheard/CustomPagination";
 import {
   Users, UserCheck, UserX, Search, Filter,
   Shield, Ban, ChevronLeft, ChevronRight, HelpCircle,
@@ -404,6 +404,7 @@ export default function ManageUsersPage() {
                 color="secondary"
                 size="sm"
               />
+            </div>
           )}
         </div>
 
@@ -486,4 +487,5 @@ export default function ManageUsersPage() {
     </>
   );
 }
+
 

@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Pagination } from "@heroui/react";`nimport { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
+import CustomPagination from "@/componet/Sheard/CustomPagination";
+import { Users, Search, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, X, ShieldOff } from "lucide-react";
 import Image from "next/image";
 
 function Toast({ toasts, removeToast }) {
@@ -269,6 +270,7 @@ export default function ManageTrainersPage() {
                 color="secondary"
                 size="sm"
               />
+            </div>
           )}
         </div>
       </div>
@@ -281,4 +283,5 @@ export default function ManageTrainersPage() {
     </>
   );
 }
+
 

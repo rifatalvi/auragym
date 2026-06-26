@@ -1,57 +1,69 @@
-﻿import React from "react";
-import { Pagination } from "@heroui/react";
+"use client";
 
-export default function CustomPagination({ page, totalPages, onChange, total }) {
-  if (totalPages <= 1) return null;
+import React from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@heroui/react";
 
-  const getPageNumbers = () => {
+export default function CustomPagination({ page, totalPages, onChange }) {
+  if (!totalPages || totalPages <= 1) return null;
+
+  const getPages = () => {
     const pages = [];
     const delta = 1;
     const left = Math.max(2, page - delta);
     const right = Math.min(totalPages - 1, page + delta);
 
-    for (let i = 1; i <= totalPages; i++) {
-      if (i === 1 || i === totalPages || (i >= left && i <= right)) {
-        pages.push(i);
-      } else if (i === left - 1 || i === right + 1) {
-        pages.push("...");
-      }
-    }
+    pages.push(1);
+    if (left > 2) pages.push("...");
+    for (let i = left; i <= right; i++) pages.push(i);
+    if (right < totalPages - 1) pages.push("...");
+    if (totalPages > 1) pages.push(totalPages);
 
     return pages;
   };
 
-  const pages = getPageNumbers();
-
   return (
     <Pagination>
-      <Pagination.Content>
-        <Pagination.Item>
-          <Pagination.Previous onClick={() => onChange(Math.max(1, page - 1))} disabled={page === 1}>
-            <Pagination.PreviousIcon />
-            <span>Prev</span>
-          </Pagination.Previous>
-        </Pagination.Item>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => page > 1 && onChange(page - 1)}
+            aria-disabled={page === 1}
+            style={{ opacity: page === 1 ? 0.4 : 1, cursor: page === 1 ? "not-allowed" : "pointer" }}
+          />
+        </PaginationItem>
 
-        {pages.map((p, idx) => (
-          <Pagination.Item key={`page-${p}-${idx}`}>
+        {getPages().map((p, idx) => (
+          <PaginationItem key={`${p}-${idx}`}>
             {p === "..." ? (
-              <Pagination.Ellipsis />
+              <PaginationEllipsis />
             ) : (
-              <Pagination.Link isActive={p === page} onClick={() => onChange(p)}>
+              <PaginationLink
+                isActive={p === page}
+                onClick={() => onChange(p)}
+                style={{ cursor: "pointer" }}
+              >
                 {p}
-              </Pagination.Link>
+              </PaginationLink>
             )}
-          </Pagination.Item>
+          </PaginationItem>
         ))}
 
-        <Pagination.Item>
-          <Pagination.Next onClick={() => onChange(Math.min(totalPages, page + 1))} disabled={page === totalPages}>
-            <span>Next</span>
-            <Pagination.NextIcon />
-          </Pagination.Next>
-        </Pagination.Item>
-      </Pagination.Content>
+        <PaginationItem>
+          <PaginationNext
+            onClick={() => page < totalPages && onChange(page + 1)}
+            aria-disabled={page === totalPages}
+            style={{ opacity: page === totalPages ? 0.4 : 1, cursor: page === totalPages ? "not-allowed" : "pointer" }}
+          />
+        </PaginationItem>
+      </PaginationContent>
     </Pagination>
   );
 }

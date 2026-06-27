@@ -23,7 +23,6 @@ const SignInPage = () => {
       const { data, error } = await authClient.signIn.email({
         email,
         password,
-        role,
       });
 
       if (error) {
@@ -34,6 +33,24 @@ const SignInPage = () => {
 
       router.push('/');
       router.refresh();
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const { data, error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/'
+      });
+      if (error) {
+        setError(error.message || 'Google sign-in failed');
+        setLoading(false);
+      }
     } catch (err) {
       setError('Something went wrong. Please try again.');
       setLoading(false);
@@ -128,37 +145,7 @@ const SignInPage = () => {
 
           <form onSubmit={handleSignIn} className="flex flex-col gap-6">
             
-            {/* Role Selection (Fixed with standard buttons) */}
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Quick Login Role</label>
-              <div className="flex flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={() => setRole('user')}
-                  className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#FF6600]/50 ${
-                    role === 'user' 
-                      ? 'border-[#FF6600] bg-[#FF6600]/10 text-[#FF6600]' 
-                      : 'border-white/10 bg-[#121212] text-gray-400 hover:border-white/20 hover:text-gray-300'
-                  }`}
-                >
-                  <User size={16} />
-                  <span className="text-sm font-semibold">User</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setRole('trainer')}
-                  className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border transition-all cursor-pointer outline-none focus:ring-2 focus:ring-[#FF6600]/50 ${
-                    role === 'trainer' 
-                      ? 'border-[#FF6600] bg-[#FF6600]/10 text-[#FF6600]' 
-                      : 'border-white/10 bg-[#121212] text-gray-400 hover:border-white/20 hover:text-gray-300'
-                  }`}
-                >
-                  <Crown size={16} />
-                  <span className="text-sm font-semibold">Trainer</span>
-                </button>
-              </div>
-            </div>
+            {/* Removed Role Selection UI */}
 
             {/* Email Input */}
             <div className="flex flex-col gap-2">
@@ -223,7 +210,9 @@ const SignInPage = () => {
             {/* Google Sign In Button */}
             <button 
               type="button"
-              className="w-full py-3.5 flex items-center justify-center gap-3 font-semibold text-gray-300 bg-[#121212] border border-white/5 rounded-xl hover:bg-[#1a1a1a] hover:border-white/10 hover:text-white transition-all active:scale-[0.98]"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full py-3.5 flex items-center justify-center gap-3 font-semibold text-gray-300 bg-[#121212] border border-white/5 rounded-xl hover:bg-[#1a1a1a] hover:border-white/10 hover:text-white transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

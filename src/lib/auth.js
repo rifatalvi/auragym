@@ -7,13 +7,19 @@ const client = new MongoClient(process.env.BETTER_AUTH_URI);
 const db = client.db('auragym');
 
 export const auth = betterAuth({
-    secret: process.env.BETTER_AUTH_SECRET,
-    advanced: {
-      cookiePrefix: "auragym",
+  secret: process.env.BETTER_AUTH_SECRET,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
-    plugins: [jwt()],
-    emailAndPassword: { 
-    enabled: true, 
+  },
+  advanced: {
+    cookiePrefix: "auragym",
+  },
+  plugins: [jwt()],
+  emailAndPassword: {
+    enabled: true,
   },
   database: mongodbAdapter(db, {
     // Optional: if you don't provide a client, database transactions won't be enabled.
@@ -23,11 +29,11 @@ export const auth = betterAuth({
     additionalFields: {
       phone: {
         type: "string",
-        required: false, 
+        required: false,
       },
       role: {
         type: "string",
-        defaultValue: "user", 
+        defaultValue: "user",
       },
     },
   },

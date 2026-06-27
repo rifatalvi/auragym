@@ -2,7 +2,8 @@
 
 import { useTheme } from "next-themes";
 import { useSession } from "@/lib/auth-client";
-import { MdSearch, MdNotifications, MdOutlineLightMode, MdOutlineDarkMode, MdFavorite, MdSettings, MdLogout, MdDashboard, MdKeyboardArrowDown, MdArrowBack } from "react-icons/md";
+import { MdSearch, MdOutlineLightMode, MdOutlineDarkMode, MdFavorite, MdSettings, MdLogout, MdDashboard, MdKeyboardArrowDown, MdArrowBack } from "react-icons/md";
+import NotificationDropdown from "@/componet/NotificationDropdown";
 import { useState, useEffect, useRef } from "react";
 
 import Link from 'next/link';
@@ -199,13 +200,7 @@ export default function DashboardHeader() {
         </button>
 
         {/* Notification */}
-        <button
-          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-white/[0.04] text-gray-500 dark:text-gray-400 transition-colors relative"
-          title="Notifications"
-        >
-          <MdNotifications size={20} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white dark:border-[#0a0007]"></span>
-        </button>
+        <NotificationDropdown />
 
         {/* Vertical Divider */}
         <div className="h-6 w-px bg-gray-200 dark:bg-white/[0.08] mx-1"></div>

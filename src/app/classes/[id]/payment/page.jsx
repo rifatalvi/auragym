@@ -7,6 +7,7 @@ import {
   Loader2, ArrowLeft, CreditCard, ShieldCheck, Clock,
   Flame, User, MapPin, CheckCircle, Lock, Zap
 } from "lucide-react";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -69,6 +70,7 @@ export default function PaymentPage() {
     }
     if (isBooked) {
       setError("You have already booked this class.");
+      toast.error("You have already booked this class.");
       return;
     }
 
@@ -92,11 +94,13 @@ export default function PaymentPage() {
         window.location.href = data.url;
       } else {
         setError("Failed to start checkout. Please try again.");
+        toast.error("Failed to start checkout.");
         setCheckoutLoading(false);
       }
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
+      toast.error("Something went wrong with the booking.");
       setCheckoutLoading(false);
     }
   };

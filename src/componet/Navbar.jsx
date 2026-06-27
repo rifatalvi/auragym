@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { Avatar } from '@heroui/react';
+import NotificationDropdown from "@/componet/NotificationDropdown";
 import { LayoutDashboard, LogOut, Bell, Sun, Moon, Menu, X } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
@@ -120,9 +121,9 @@ const Navbar = () => {
             <div className="h-10 w-24 bg-gray-200 dark:bg-red-950/30 animate-pulse rounded-xl hidden sm:block" />
           ) : user ? (
             <>
-              <button className="p-2 rounded-full bg-gray-100 dark:bg-red-950/30 border border-gray-200 dark:border-red-900/30 text-gray-600 dark:text-gray-400 hover:text-red-700 dark:hover:text-rose-400 transition-all hidden sm:block">
-                <Bell size={18} />
-              </button>
+              <div className="hidden sm:block">
+                <NotificationDropdown />
+              </div>
 
               <Link
                 href={authLinks[user?.role?.toLowerCase()] || '/dashboard/user'}

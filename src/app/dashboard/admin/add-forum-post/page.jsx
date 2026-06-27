@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Loader2, PlusCircle, CheckCircle, MessageSquarePlus } from "lucide-react";
@@ -73,7 +74,7 @@ export default function AddForumPostPage() {
         role: session.user.role || "admin",
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`, {
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

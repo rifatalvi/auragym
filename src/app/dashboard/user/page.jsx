@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import fetchSecure from '../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { motion } from "framer-motion";
 import { 
@@ -32,7 +33,7 @@ export default function UserOverviewPage() {
     const fetchStats = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.email}/stats`);
+        const res = await fetchSecure(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.email}/stats`);
         if (res.ok) {
           const data = await res.json();
           setStats(data);

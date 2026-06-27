@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import fetchSecure from '../../../lib/fetchSecure';
 import { Users, CalendarDays, CheckCircle, ShieldCheck, TrendingUp, Activity } from "lucide-react";
 import { Avatar } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
@@ -49,7 +50,7 @@ export default function AdminOverviewPage() {
     const fetchStats = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${apiUrl}/api/admin/stats`);
+        const res = await fetchSecure(`${apiUrl}/api/admin/stats`);
         if (res.ok) {
           const data = await res.json();
           setStats(data);

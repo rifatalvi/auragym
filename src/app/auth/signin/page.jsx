@@ -2,15 +2,16 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Dumbbell, Mail, Lock, ArrowRight, Loader2, User, Crown, Activity, BarChart3, Users } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Dumbbell, Mail, Lock, ArrowRight, Loader2, Activity, BarChart3, Users } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
 const SignInPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user'); // Default role is 'user'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,7 +32,7 @@ const SignInPage = () => {
         return;
       }
 
-      router.push('/');
+      router.push(callbackUrl);
       router.refresh();
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -45,7 +46,7 @@ const SignInPage = () => {
     try {
       const { data, error } = await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/'
+        callbackURL: callbackUrl
       });
       if (error) {
         setError(error.message || 'Google sign-in failed');

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import fetchSecure from '../../lib/fetchSecure';
 import { motion } from 'framer-motion';
 import { Heart, Flame, Dumbbell, Shield, Zap, Droplets } from 'lucide-react';
 import { ClassCard } from '../Sheard/ClassicCard';
@@ -21,7 +22,7 @@ export default function FeaturedClasses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/featured-classes`)
+    fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/featured-classes`)
       .then((r) => r.json())
       .then((data) => { setClasses(data); setLoading(false); })
       .catch(() => setLoading(false));

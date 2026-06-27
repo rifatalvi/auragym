@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Loader2, PlusCircle, CheckCircle, UploadCloud, Calendar } from "lucide-react";
@@ -95,7 +96,7 @@ export default function AddClassPage() {
         status: "Pending",
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes`, {
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/classes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

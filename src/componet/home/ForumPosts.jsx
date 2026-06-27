@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import fetchSecure from '../../lib/fetchSecure';
 import { motion } from 'framer-motion';
 import { MessageSquare, ThumbsUp, Clock, Tag, ArrowUpRight, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
@@ -38,7 +39,7 @@ export default function ForumPosts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/latest`)
+    fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/latest`)
       .then((r) => r.json())
       .then((data) => {
         setPosts(data);

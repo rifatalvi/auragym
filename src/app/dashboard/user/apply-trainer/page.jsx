@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import {
@@ -45,7 +46,7 @@ export default function ApplyAsTrainer() {
     const check = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer-apply/${session.user.email}`);
+        const res = await fetchSecure(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer-apply/${session.user.email}`);
         if (res.ok) {
           const data = await res.json();
           if (data.exists) setExistingApp(data);
@@ -72,7 +73,7 @@ export default function ApplyAsTrainer() {
     setErrors({});
     setSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer-apply`, {
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer-apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import {
   Users, UserCheck, UserX, Search, Filter,
   Shield, Ban, ChevronLeft, ChevronRight, HelpCircle,
@@ -139,7 +140,7 @@ export default function ManageUsersPage() {
     setLoading(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(apiUrl + '/api/admin/users?page=' + page + '&limit=5&search=' + search + '&role=' + roleFilter);
+      const res = await fetchSecure(apiUrl + '/api/admin/users?page=' + page + '&limit=5&search=' + search + '&role=' + roleFilter);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       setUsers(data.users);
@@ -178,7 +179,7 @@ export default function ManageUsersPage() {
       async () => {
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-          const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/block', {
+          const res = await fetchSecure(apiUrl + '/api/admin/users/' + userId + '/block', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus }),
@@ -200,7 +201,7 @@ export default function ManageUsersPage() {
       async () => {
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-          const res = await fetch(apiUrl + '/api/admin/users/' + userId + '/role', {
+          const res = await fetchSecure(apiUrl + '/api/admin/users/' + userId + '/role', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role: newRole }),

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import fetchSecure from '../../lib/fetchSecure';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Heart, Clock, Zap, Flame, Activity, User, CalendarDays, ArrowUpRight } from 'lucide-react';
@@ -23,7 +24,7 @@ export const ClassCard = ({ cls }) => {
   // Check initial favorite status
   useEffect(() => {
     if (session?.user?.email && cls._id) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${cls._id}&userId=${session.user.email}`)
+      fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${cls._id}&userId=${session.user.email}`)
         .then(res => res.json())
         .then(data => setIsFavorited(data.isFavorited))
         .catch(err => console.error(err));
@@ -42,7 +43,7 @@ export const ClassCard = ({ cls }) => {
     setIsFavorited(!isFavorited);
     
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
+      await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId: cls._id, userId: session.user.email })

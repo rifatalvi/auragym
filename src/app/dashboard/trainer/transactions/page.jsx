@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { MdCreditCard, MdReceiptLong, MdCheckCircle, MdPerson } from "react-icons/md";
 import Link from "next/link";
@@ -14,7 +15,7 @@ export default function TransactionsPage() {
     const fetchTransactions = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`);
+        const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);

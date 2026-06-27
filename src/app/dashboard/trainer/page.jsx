@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import fetchSecure from '../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { MdDashboard, MdOutlineClass, MdPeopleOutline, MdVerifiedUser, MdWallet, MdTrendingUp } from 'react-icons/md';
 import {
@@ -19,8 +20,8 @@ export default function TrainerOverviewPage() {
       if (!session?.user?.email) return;
       try {
         const [classesRes, bookingsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`)
+          fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`),
+          fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`)
         ]);
 
         if (classesRes.ok) {

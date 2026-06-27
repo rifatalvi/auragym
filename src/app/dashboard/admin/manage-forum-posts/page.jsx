@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import CustomPagination from "@/componet/Sheard/CustomPagination";
 import { ForumManageRowSkeleton } from "@/componet/Sheard/Skeleton";
 import { Search, Trash2, MessageSquare, CheckCircle, AlertCircle, X, XCircle, User, Mail, Calendar, Tag } from "lucide-react";
@@ -163,7 +164,7 @@ export default function ManageForumPostsPage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum?all=true`);
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum?all=true`);
       if (!res.ok) throw new Error("Failed to fetch posts");
       const data = await res.json();
       setPosts(data.posts || data || []);
@@ -191,7 +192,7 @@ export default function ManageForumPostsPage() {
       "Permanently delete this post? This cannot be undone.",
       async () => {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, { method: "DELETE" });
+          const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, { method: "DELETE" });
           if (!res.ok) throw new Error("Failed");
           addToast("Post deleted successfully", "success");
           void fetchPosts();
@@ -206,7 +207,7 @@ export default function ManageForumPostsPage() {
       "This post will become visible to all users on the public forum.",
       async () => {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/approve`, { method: "PATCH" });
+          const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/approve`, { method: "PATCH" });
           if (!res.ok) throw new Error("Failed");
           addToast("Post approved successfully", "success");
           void fetchPosts();
@@ -221,7 +222,7 @@ export default function ManageForumPostsPage() {
       "This post will remain hidden from public view.",
       async () => {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/reject`, { method: "PATCH" });
+          const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/reject`, { method: "PATCH" });
           if (!res.ok) throw new Error("Failed");
           addToast("Post rejected", "success");
           void fetchPosts();

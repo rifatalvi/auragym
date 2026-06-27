@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { MdCreditCard, MdReceiptLong, MdCheckCircle, MdSearch, MdPerson } from "react-icons/md";
 import { FiTrendingUp } from "react-icons/fi";
@@ -14,7 +15,7 @@ export default function AdminTransactionsPage() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/transactions`);
+        const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/transactions`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);

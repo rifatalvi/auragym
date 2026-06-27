@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import fetchSecure from '../../lib/fetchSecure';
 import SideBarManu from "@/componet/dashboard/SideBarManu";
 import DashboardHeader from "@/componet/dashboard/DashboardHeader";
 import { authClient } from "@/lib/auth-client";
@@ -23,7 +24,7 @@ const DashboardLayout = ({children}) => {
 
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
-                const res = await fetch(`${apiUrl}/api/users/${session.user.email}/stats`);
+                const res = await fetchSecure(`${apiUrl}/api/users/${session.user.email}/stats`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.userStatus === 'blocked') {

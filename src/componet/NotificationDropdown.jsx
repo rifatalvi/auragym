@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import fetchSecure from '../lib/fetchSecure';
 import { MdNotifications, MdCheckCircle } from "react-icons/md";
 import { useSession } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,7 +26,7 @@ export default function NotificationDropdown() {
   const fetchNotifications = async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${session.user.email}`);
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${session.user.email}`);
       if (res.ok) {
         const data = await res.json();
         setNotifications(data);
@@ -43,7 +44,7 @@ export default function NotificationDropdown() {
       const welcomedKey = `welcomed_${session.user.email}`;
       if (!localStorage.getItem(welcomedKey)) {
         // Send welcome notification
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
+        fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -65,7 +66,7 @@ export default function NotificationDropdown() {
 
   const markAsRead = async (id) => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${id}/mark-read`, {
+      await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${id}/mark-read`, {
         method: "PATCH"
       });
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));

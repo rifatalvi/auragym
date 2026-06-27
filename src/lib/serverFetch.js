@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import fetchSecure from './fetchSecure';
 import { auth } from "@/lib/auth";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -21,7 +22,7 @@ export const getTokenServer = async () => {
 export const protectedServerFetch = async (path, options = {}) => {
   const token = await getTokenServer();
   
-  const res = await fetch(`${baseUrl}${path}`, {
+  const res = await fetchSecure(`${baseUrl}${path}`, {
     ...options,
     headers: {
       ...options.headers,

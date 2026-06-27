@@ -43,7 +43,7 @@ export default function MyForumPostsPage() {
 
     setDeleteLoading(postId);
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/forum/${postId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, {
         method: "DELETE",
       });
 

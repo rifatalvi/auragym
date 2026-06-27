@@ -52,10 +52,10 @@ export default function MyClassesPage() {
     try {
       // In a real scenario, the reason could be sent to the backend for logging
       // e.g. body: JSON.stringify({ reason: deleteReason })
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/classes/${deletingClass._id}`, { 
-        method: "DELETE" 
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${deletingClass._id}`, {
+        method: "DELETE"
       });
-      
+
       if (res.ok) {
         setClasses(classes.filter((c) => c._id !== deletingClass._id));
         setDeletingClass(null);
@@ -72,7 +72,7 @@ export default function MyClassesPage() {
     setViewingAttendees(classId);
     setAttendeesLoading(true);
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/classes/${classId}/attendees`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${classId}/attendees`);
       if (res.ok) {
         const data = await res.json();
         setAttendees(data);
@@ -87,7 +87,7 @@ export default function MyClassesPage() {
   const handleUpdateClass = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/classes/${editingClass._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${editingClass._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingClass),
@@ -155,12 +155,12 @@ export default function MyClassesPage() {
                       <div className="flex items-center gap-3">
                         {cls.image ? (
                           <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1] relative">
-                            <Image 
-                              src={cls.image} 
-                              alt={cls.className || cls.name || "Class Image"} 
-                              fill 
+                            <Image
+                              src={cls.image}
+                              alt={cls.className || cls.name || "Class Image"}
+                              fill
                               sizes="40px"
-                              className="object-cover" 
+                              className="object-cover"
                             />
                           </div>
                         ) : (
@@ -180,11 +180,10 @@ export default function MyClassesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${
-                        cls.status === 'Approved' ? 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400'
+                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${cls.status === 'Approved' ? 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400'
                         : cls.status === 'Rejected' ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400'
-                        : 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400'
-                      }`}>
+                          : 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                        }`}>
                         {cls.status === 'Approved' ? <MdCheckCircle size={14} /> : cls.status === 'Rejected' ? <MdCancel size={14} /> : <MdPendingActions size={14} />}
                         {cls.status || 'Pending'}
                       </div>
@@ -196,7 +195,7 @@ export default function MyClassesPage() {
                           className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 transition-colors flex items-center gap-2 group"
                           title="View enrolled students"
                         >
-                          <MdPeople size={16} /> 
+                          <MdPeople size={16} />
                           <span>Students</span>
                           {/* Beautiful booking count badge */}
                           <span className="flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-blue-200 dark:bg-blue-500/30 text-[10px] text-blue-800 dark:text-blue-200 group-hover:scale-110 transition-transform">
@@ -307,7 +306,7 @@ export default function MyClassesPage() {
                 <MdClose size={24} />
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto flex-1">
               {attendeesLoading ? (
                 <div className="flex justify-center py-10">
@@ -372,15 +371,15 @@ export default function MyClassesPage() {
                 </div>
 
                 <div className="flex gap-3 justify-end">
-                  <button 
-                    type="button" 
-                    onClick={() => { setDeletingClass(null); setDeleteReason(""); }} 
+                  <button
+                    type="button"
+                    onClick={() => { setDeletingClass(null); setDeleteReason(""); }}
                     disabled={deleteLoading}
                     className="px-4 py-2 rounded-xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     disabled={deleteLoading}
                     className="px-4 py-2 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-md shadow-red-600/20 disabled:opacity-70 flex items-center gap-2"

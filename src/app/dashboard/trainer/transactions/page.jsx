@@ -14,7 +14,7 @@ export default function TransactionsPage() {
     const fetchTransactions = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer/${session.user.email}/bookings`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);
@@ -71,7 +71,7 @@ export default function TransactionsPage() {
                     </div>
                     <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">No bookings yet</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 mb-6">Students haven&apos;t booked your classes yet.</p>
-                    
+
                     <div className="max-w-md mx-auto text-left bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl p-4 mt-6">
                       <h4 className="text-sm font-bold text-red-800 dark:text-rose-400 mb-2 flex items-center gap-2"><MdCheckCircle size={16} /> Quick Tips for Trainers</h4>
                       <ul className="text-xs text-red-700/80 dark:text-rose-300/80 space-y-1.5 list-disc pl-5">
@@ -140,7 +140,7 @@ export default function TransactionsPage() {
             </tbody>
           </table>
         </div>
-        
+
         {/* Footer */}
         {!loading && transactions.length > 0 && (
           <div className="px-6 py-3.5 border-t border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01]">

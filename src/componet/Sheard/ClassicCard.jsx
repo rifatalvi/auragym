@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Heart, Clock, Zap, Flame, Activity, User, CalendarDays, ArrowUpRight } from 'lucide-react';
@@ -20,14 +20,37 @@ export const ClassCard = ({ cls }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
 
-  const handleFavoriteClick = (e) => {
+  // Check initial favorite status
+  useEffect(() => {
+    if (session?.user?.email && cls._id) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${cls._id}&userId=${session.user.email}`)
+        .then(res => res.json())
+        .then(data => setIsFavorited(data.isFavorited))
+        .catch(err => console.error(err));
+    }
+  }, [session, cls._id]);
+
+  const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (!session?.user) {
       alert("Please log in to save favorites.");
       return;
     }
+    
+    // Optimistic UI update
     setIsFavorited(!isFavorited);
+    
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ classId: cls._id, userId: session.user.email })
+      });
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+      setIsFavorited(isFavorited); // Revert on failure
+    }
   };
 
   const coachName = cls.coach?.name || cls.trainer || 'Expert Coach';

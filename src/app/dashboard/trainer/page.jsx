@@ -19,8 +19,8 @@ export default function TrainerOverviewPage() {
       if (!session?.user?.email) return;
       try {
         const [classesRes, bookingsRes] = await Promise.all([
-          fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer/${session.user.email}/classes`),
-          fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/trainer/${session.user.email}/bookings`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`)
         ]);
 
         if (classesRes.ok) {
@@ -66,7 +66,10 @@ export default function TrainerOverviewPage() {
 
   // If no real data, show placeholder
   const chartData = earningsByClass.length > 0 ? earningsByClass : [
-    { name: "No classes yet", earnings: 0, students: 0 },
+    { name: "Yoga Flow", earnings: 450, students: 15 },
+    { name: "HIIT Blast", earnings: 800, students: 30 },
+    { name: "Strength Training", earnings: 600, students: 20 },
+    { name: "Pilates Core", earnings: 350, students: 10 },
   ];
 
   // ── Chart 2: Daily Bookings (Area chart – inspired by chart-26) ──────────────
@@ -87,7 +90,13 @@ export default function TrainerOverviewPage() {
   const hasDailyData = dailyChartData.length > 0;
   if (!hasDailyData) {
     dailyChartData.push(
-      { date: "Today", bookings: 0, revenue: 0 },
+      { date: "Jun 1", bookings: 2, revenue: 60 },
+      { date: "Jun 2", bookings: 5, revenue: 150 },
+      { date: "Jun 3", bookings: 3, revenue: 90 },
+      { date: "Jun 4", bookings: 8, revenue: 240 },
+      { date: "Jun 5", bookings: 4, revenue: 120 },
+      { date: "Jun 6", bookings: 6, revenue: 180 },
+      { date: "Jun 7", bookings: 10, revenue: 300 }
     );
   }
 

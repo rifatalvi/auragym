@@ -7,6 +7,10 @@ const client = new MongoClient(process.env.BETTER_AUTH_URI);
 const db = client.db('auragym');
 
 export const auth = betterAuth({
+    secret: process.env.BETTER_AUTH_SECRET,
+    advanced: {
+      cookiePrefix: "auragym",
+    },
     plugins: [jwt()],
     emailAndPassword: { 
     enabled: true, 

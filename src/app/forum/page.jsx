@@ -70,13 +70,13 @@ export default function CommunityForumPage() {
                 <div className="relative h-48 overflow-hidden shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent z-10" />
                   <img 
-                    src={getImage(post.category)} 
+                    src={post.image || getImage(post.category)} 
                     alt={post.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute bottom-4 left-4 z-20 flex gap-2">
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/30">
-                      {post.category}
+                      {post.category || 'Motivation'}
                     </span>
                   </div>
                 </div>
@@ -86,16 +86,16 @@ export default function CommunityForumPage() {
                     {post.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 line-clamp-3">
-                    {post.content}
+                    {post.content || post.description || "No description"}
                   </p>
                   
                   <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
-                          {post.author.charAt(0).toUpperCase()}
+                          {(post.author || post.authorName || 'A').charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{post.author}</span>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{post.author || post.authorName || 'Anonymous'}</span>
                       </div>
                       <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <Clock size={12} />

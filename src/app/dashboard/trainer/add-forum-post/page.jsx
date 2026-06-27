@@ -12,10 +12,12 @@ export default function AddForumPostPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    category: "Motivation",
   });
 
   const handleChange = (e) => {
@@ -24,7 +26,9 @@ export default function AddForumPostPage() {
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -62,6 +66,7 @@ export default function AddForumPostPage() {
       const payload = {
         title: formData.title,
         description: formData.description,
+        category: formData.category,
         image: imageUrl,
         authorName: session.user.name,
         authorEmail: session.user.email,
@@ -141,6 +146,23 @@ export default function AddForumPostPage() {
             />
           </div>
 
+          {/* Category */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Category <span className="text-red-500">*</span></label>
+            <select
+              name="category"
+              required
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            >
+              <option value="Nutrition">Nutrition</option>
+              <option value="Training Tips">Training Tips</option>
+              <option value="Recovery">Recovery</option>
+              <option value="Motivation">Motivation</option>
+            </select>
+          </div>
+
           {/* Image Upload */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cover Image</label>
@@ -151,6 +173,11 @@ export default function AddForumPostPage() {
               onChange={handleFileChange}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 dark:file:bg-red-900/20 dark:file:text-rose-400"
             />
+            {imagePreview && (
+              <div className="mt-4 relative w-full max-w-sm aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm">
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
           </div>
 
           {/* Description */}

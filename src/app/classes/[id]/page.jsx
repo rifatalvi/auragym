@@ -45,11 +45,11 @@ export default function ClassDetailsPage() {
 
   useEffect(() => {
     const fetchUserStatus = async () => {
-      if (!session?.user?.id || !id) return;
+      if (!session?.user?.email || !id) return;
       try {
         const [bookingRes, favRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/check?classId=${id}&userId=${session.user.id}`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${id}&userId=${session.user.id}`)
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/check?classId=${id}&userId=${session.user.email}`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${id}&userId=${session.user.email}`)
         ]);
         if (bookingRes.ok) setIsBooked((await bookingRes.json()).isBooked);
         if (favRes.ok) setIsFavorited((await favRes.json()).isFavorited);
@@ -58,7 +58,7 @@ export default function ClassDetailsPage() {
       }
     };
     fetchUserStatus();
-  }, [id, session?.user?.id]);
+  }, [id, session?.user?.email]);
 
   const handleBookNow = async (e) => {
     if (e) e.preventDefault();
@@ -82,7 +82,7 @@ export default function ClassDetailsPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classId: id, userId: session.user.id })
+        body: JSON.stringify({ classId: id, userId: session.user.email })
       });
       if (!res.ok) throw new Error("Failed to toggle favorite");
       const data = await res.json();

@@ -166,17 +166,31 @@ export default function AddForumPostPage() {
           {/* Image Upload */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cover Image</label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-600 hover:file:bg-pink-100 dark:file:bg-pink-500/10 dark:file:text-pink-400"
-            />
-            {imagePreview && (
-              <div className="mt-4 relative w-full max-w-sm aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm">
+            {imagePreview ? (
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-sm group">
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label
+                    htmlFor="image-upload-admin"
+                    className="cursor-pointer px-5 py-2.5 bg-white/90 text-gray-900 text-sm font-bold rounded-xl hover:bg-white transition-colors shadow-lg"
+                  >
+                    Change Image
+                  </label>
+                </div>
+                <input id="image-upload-admin" type="file" name="image" accept="image/*" onChange={handleFileChange} className="hidden" />
               </div>
+            ) : (
+              <label
+                htmlFor="image-upload-admin"
+                className="flex flex-col items-center justify-center w-full h-52 rounded-2xl border-2 border-dashed border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/[0.02] hover:bg-gray-100 dark:hover:bg-white/[0.04] hover:border-pink-400 dark:hover:border-pink-500/60 transition-all cursor-pointer group"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <PlusCircle size={28} className="text-pink-500 dark:text-pink-400" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Click to upload cover image</p>
+                <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 10MB</p>
+                <input id="image-upload-admin" type="file" name="image" accept="image/*" onChange={handleFileChange} className="hidden" />
+              </label>
             )}
           </div>
 

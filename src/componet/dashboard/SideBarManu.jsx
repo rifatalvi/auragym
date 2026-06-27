@@ -48,6 +48,7 @@ export default function SideBarManu() {
     { icon: MdFitnessCenter, href: "/dashboard/trainer/my-classes", label: "My Classes" },
     { icon: MdPostAdd, href: "/dashboard/trainer/add-forum-post", label: "Add Forum Post" },
     { icon: MdForum, href: "/dashboard/trainer/my-forum-posts", label: "My Forum Posts" },
+    { icon: MdFavorite, href: "/dashboard/trainer/favorite-classes", label: "Favorite Classes" },
     { icon: MdCreditCard, href: "/dashboard/trainer/transactions", label: "Transactions" },
   ];
 
@@ -59,6 +60,7 @@ export default function SideBarManu() {
     { icon: MdFitnessCenter, href: "/dashboard/admin/manage-classes", label: "Manage Classes" },
     { icon: MdPostAdd, href: "/dashboard/admin/add-forum-post", label: "Add Forum Post" },
     { icon: MdCreditCard, href: "/dashboard/admin/transactions", label: "Transactions" },
+    { icon: MdFavorite, href: "/dashboard/admin/favorite-classes", label: "Favorite Classes" },
     { icon: MdManageAccounts, href: "/dashboard/admin/manage-forum-posts", label: "Forum Post Manage" },
   ];
 

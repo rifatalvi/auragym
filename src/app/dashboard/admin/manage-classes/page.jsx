@@ -9,20 +9,46 @@ import {
   MdPendingActions, MdChevronLeft, MdChevronRight,
   MdLockOpen, MdLock
 } from "react-icons/md";
+import { AlertCircle } from "lucide-react";
 import Image from "next/image";
+
+function ConfirmModal({ isOpen, onConfirm, onCancel }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white dark:bg-[#0d1421] border border-gray-200 dark:border-white/10 rounded-3xl w-full max-w-sm shadow-2xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center">
+            <AlertCircle size={20} className="text-red-600 dark:text-red-400" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Class</h3>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">Are you sure you want to delete this class? This action cannot be undone.</p>
+        <div className="flex gap-3 justify-end">
+          <button onClick={onCancel} className="px-5 py-2 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 text-sm font-semibold border border-gray-200 dark:border-white/10 transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm} className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold shadow-md transition-colors">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const LIMIT = 10;
 
 const STATUS_FILTERS = [
-  { label: "All",      value: "all",      color: "gray"   },
-  { label: "Pending",  value: "pending",  color: "yellow" },
-  { label: "Approved", value: "approved", color: "green"  },
-  { label: "Rejected", value: "rejected", color: "red"    },
+  { label: "All", value: "all", color: "gray" },
+  { label: "Pending", value: "pending", color: "yellow" },
+  { label: "Approved", value: "approved", color: "green" },
+  { label: "Rejected", value: "rejected", color: "red" },
 ];
 
 const VISIBILITY_FILTERS = [
-  { label: "Any",    value: "all"    },
-  { label: "Open",   value: "open"   },
+  { label: "Any", value: "all" },
+  { label: "Open", value: "open" },
   { label: "Closed", value: "closed" },
 ];
 
@@ -34,6 +60,7 @@ export default function ManageClassesPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   // Filter state
   const [statusFilter, setStatusFilter] = useState("all");
@@ -46,7 +73,7 @@ export default function ManageClassesPage() {
       if (status !== "all") params.set("status", status);
       if (visibility !== "all") params.set("visibility", visibility);
 
-      const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/classes?${params}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes?${params}`);
       if (res.ok) {
         const data = await res.json();
         setClasses(data.classes);
@@ -76,8 +103,8 @@ export default function ManageClassesPage() {
     try {
       const method = action === "delete" ? "DELETE" : "PATCH";
       const url = action === "delete"
-        ? `$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/classes/${id}`
-        : `$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/classes/${id}/${action}`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes/${id}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes/${id}/${action}`;
 
       const res = await fetch(url, { method });
 
@@ -110,6 +137,14 @@ export default function ManageClassesPage() {
   const isApproved = (cls) => cls.status === "Approved" || cls.status === "approved";
   const isRejected = (cls) => cls.status === "Rejected" || cls.status === "rejected";
 
+  const confirmDelete = (id) => setDeleteConfirmId(id);
+  const handleConfirmDelete = () => {
+    if (deleteConfirmId) {
+      handleAction(deleteConfirmId, "delete");
+      setDeleteConfirmId(null);
+    }
+  };
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -119,7 +154,13 @@ export default function ManageClassesPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <>
+      <ConfirmModal 
+        isOpen={!!deleteConfirmId} 
+        onConfirm={handleConfirmDelete} 
+        onCancel={() => setDeleteConfirmId(null)} 
+      />
+      <div className="max-w-6xl mx-auto space-y-6">
       {/* Page Header */}
       <div className="mb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
@@ -149,10 +190,10 @@ export default function ManageClassesPage() {
           {STATUS_FILTERS.map((f) => {
             const active = statusFilter === f.value;
             const colorMap = {
-              gray:   active ? "bg-gray-700 text-white border-gray-700"   : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+              gray: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
               yellow: active ? "bg-yellow-500 text-white border-yellow-500" : "bg-white dark:bg-white/[0.03] text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30 hover:border-yellow-400",
-              green:  active ? "bg-green-600 text-white border-green-600"  : "bg-white dark:bg-white/[0.03] text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30 hover:border-green-400",
-              red:    active ? "bg-red-600 text-white border-red-600"     : "bg-white dark:bg-white/[0.03] text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30 hover:border-red-400",
+              green: active ? "bg-green-600 text-white border-green-600" : "bg-white dark:bg-white/[0.03] text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30 hover:border-green-400",
+              red: active ? "bg-red-600 text-white border-red-600" : "bg-white dark:bg-white/[0.03] text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30 hover:border-red-400",
             };
             return (
               <button
@@ -177,9 +218,9 @@ export default function ManageClassesPage() {
           {VISIBILITY_FILTERS.map((f) => {
             const active = visibilityFilter === f.value;
             const colorMap = {
-              all:    active ? "bg-gray-700 text-white border-gray-700"    : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
-              open:   active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-white/[0.03] text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400",
-              closed: active ? "bg-slate-600 text-white border-slate-600"  : "bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/30 hover:border-slate-400",
+              all: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+              open: active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-white/[0.03] text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400",
+              closed: active ? "bg-slate-600 text-white border-slate-600" : "bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/30 hover:border-slate-400",
             };
             return (
               <button
@@ -254,14 +295,14 @@ export default function ManageClassesPage() {
                         )}
                         <div>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
-                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} â€¢ ${cls.price}</p>
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} ${cls.price}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Trainer */}
                     <td className="px-6 py-4">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || "â€”"}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || 'none'}</p>
                     </td>
 
                     {/* Category */}
@@ -273,13 +314,12 @@ export default function ManageClassesPage() {
 
                     {/* Approval Status */}
                     <td className="px-6 py-4">
-                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${
-                        isApproved(cls)
-                          ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400"
-                          : isRejected(cls)
+                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${isApproved(cls)
+                        ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400"
+                        : isRejected(cls)
                           ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400"
                           : "bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400"
-                      }`}>
+                        }`}>
                         {isApproved(cls) ? <MdCheckCircle size={13} /> : isRejected(cls) ? <MdCancel size={13} /> : <MdPendingActions size={13} />}
                         {cls.status || "Pending"}
                       </div>
@@ -291,18 +331,17 @@ export default function ManageClassesPage() {
                         <button
                           onClick={() => handleAction(cls._id, "toggle-visibility")}
                           disabled={actionLoading === `${cls._id}-toggle-visibility`}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-60 ${
-                            cls.isOpen
-                              ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100"
-                              : "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:bg-gray-200"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-60 ${cls.isOpen
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100"
+                            : "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:bg-gray-200"
+                            }`}
                           title={cls.isOpen ? "Click to Close (hide from users)" : "Click to Open (show to users)"}
                         >
                           {cls.isOpen ? <MdLockOpen size={14} /> : <MdLock size={14} />}
                           {cls.isOpen ? "Open" : "Closed"}
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">â€”</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">”</span>
                       )}
                     </td>
 
@@ -326,7 +365,7 @@ export default function ManageClassesPage() {
                           <MdCancel size={18} />
                         </button>
                         <button
-                          onClick={() => handleAction(cls._id, "delete")}
+                          onClick={() => confirmDelete(cls._id)}
                           disabled={!!actionLoading}
                           className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
                           title="Delete"
@@ -345,17 +384,18 @@ export default function ManageClassesPage() {
         {/* Pagination Footer */}
         {!loading && totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01] flex items-center justify-between">
-            <CustomPagination 
-              page={page} 
-              totalPages={totalPages} 
-              totalItems={total} 
-              itemsPerPage={LIMIT} 
-              onChange={(p) => { setPage(p); fetchClasses(p); }}  
+            <CustomPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={total}
+              itemsPerPage={LIMIT}
+              onChange={(p) => { setPage(p); fetchClasses(p); }}
             />
           </div>
         )}
       </div>
     </div>
+    </>
   );
 }
 

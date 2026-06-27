@@ -7,6 +7,7 @@ import {
   X, CheckCircle, AlertCircle, ChevronDown
 } from "lucide-react";
 import Image from "next/image";
+import { Pagination } from "@heroui/react";
 
 function Toast({ toasts, removeToast }) {
   return (
@@ -399,18 +400,51 @@ export default function ManageUsersPage() {
           </div>
           {totalPages > 0 && (
             <div className="px-6 py-4 border-t border-gray-200 dark:border-white/8 flex items-center justify-between bg-gray-50 dark:bg-white/2 rounded-b-2xl">
-              <span className="text-xs text-gray-500 font-medium">
-                Page <span className="text-gray-900 dark:text-white font-bold">{page}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalPages}</span>
-              </span>
-              <div className="flex items-center gap-1">
-                <button type="button" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 disabled:opacity-50 border border-gray-200 dark:border-white/10 transition-all">
-                  <ChevronLeft size={15} />
-                </button>
-                <span className="w-9 h-8 flex items-center justify-center text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg">{page}</span>
-                <button type="button" disabled={page === totalPages || totalPages === 0} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 disabled:opacity-50 border border-gray-200 dark:border-white/10 transition-all">
-                  <ChevronRight size={15} />
-                </button>
-              </div>
+              <Pagination className="w-full" size="sm">
+                <Pagination.Summary>
+                  Showing {(page - 1) * 5 + 1}-{Math.min(page * 5, stats.total)} of {stats.total} results
+                </Pagination.Summary>
+                <Pagination.Content>
+                  <Pagination.Item>
+                    <Pagination.Previous isDisabled={page === 1} onPress={() => setPage((p) => p - 1)}>
+                      <Pagination.PreviousIcon />
+                      <span>Previous</span>
+                    </Pagination.Previous>
+                  </Pagination.Item>
+                  
+                  {(() => {
+                    const pages = [];
+                    pages.push(1);
+                    if (page > 3) pages.push("ellipsis");
+                    const start = Math.max(2, page - 1);
+                    const end = Math.min(totalPages - 1, page + 1);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (page < totalPages - 2) pages.push("ellipsis");
+                    if (totalPages > 1) pages.push(totalPages);
+                    
+                    return pages.map((p, i) =>
+                      p === "ellipsis" ? (
+                        <Pagination.Item key={`ellipsis-${i}`}>
+                          <Pagination.Ellipsis />
+                        </Pagination.Item>
+                      ) : (
+                        <Pagination.Item key={p}>
+                          <Pagination.Link isActive={p === page} onPress={() => setPage(p)}>
+                            {p}
+                          </Pagination.Link>
+                        </Pagination.Item>
+                      )
+                    );
+                  })()}
+
+                  <Pagination.Item>
+                    <Pagination.Next isDisabled={page === totalPages} onPress={() => setPage((p) => p + 1)}>
+                      <span>Next</span>
+                      <Pagination.NextIcon />
+                    </Pagination.Next>
+                  </Pagination.Item>
+                </Pagination.Content>
+              </Pagination>
             </div>
           )}
         </div>

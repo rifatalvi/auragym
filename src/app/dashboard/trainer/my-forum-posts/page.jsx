@@ -14,7 +14,7 @@ export default function MyForumPostsPage() {
   const fetchPosts = useCallback(async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum?all=true`);
       const data = await res.json();
 
       const myPosts = (data.posts || []).filter(
@@ -45,6 +45,10 @@ export default function MyForumPostsPage() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+
+        }
       });
 
       if (res.ok) {
@@ -103,41 +107,46 @@ export default function MyForumPostsPage() {
           </a>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {posts.map((post) => (
             <div
               key={post._id}
-              className="bg-white dark:bg-[#120010] rounded-2xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden flex flex-col"
+              className="bg-white dark:bg-[#120010] rounded-xl border border-gray-100 dark:border-white/[0.06] shadow-sm overflow-hidden flex flex-row h-32 hover:shadow-md transition-shadow"
             >
               {post.image ? (
-                <div className="h-40 w-full overflow-hidden">
+                <div className="h-full w-32 shrink-0 relative">
                   <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
                 </div>
               ) : (
-                <div className="h-40 w-full bg-gradient-to-br from-red-100 to-orange-50 dark:from-red-900/40 dark:to-orange-900/20 flex items-center justify-center">
-                  <MessageSquare className="w-12 h-12 text-red-300 dark:text-red-800" />
+                <div className="h-full w-32 shrink-0 bg-gradient-to-br from-red-100 to-orange-50 dark:from-red-900/40 dark:to-orange-900/20 flex items-center justify-center relative">
+                  <MessageSquare className="w-8 h-8 text-red-300 dark:text-red-800" />
                 </div>
               )}
-              <div className="p-5 flex flex-col flex-1">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 mb-2">
-                  {post.title}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-1">
+              <div className="p-4 flex flex-col flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white truncate">
+                    {post.title}
+                  </h3>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white shrink-0 ${post.status === 'Approved' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+                    {post.status || 'Pending'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 flex-1 mb-2">
                   {post.content || post.description}
                 </p>
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-white/[0.06]">
-                  <span className="text-xs font-medium text-gray-400">
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-[10px] font-medium text-gray-400">
                     {new Date(post.createdAt || new Date()).toLocaleDateString()}
                   </span>
                   <button
                     onClick={() => handleDelete(post._id)}
                     disabled={deleteLoading === post._id}
-                    className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors disabled:opacity-50"
                   >
                     {deleteLoading === post._id ? (
-                      <Loader2 size={16} className="animate-spin" />
+                      <Loader2 size={14} className="animate-spin" />
                     ) : (
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     )}
                     Delete
                   </button>

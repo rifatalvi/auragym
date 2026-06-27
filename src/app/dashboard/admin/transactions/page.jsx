@@ -14,7 +14,7 @@ export default function AdminTransactionsPage() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await fetch(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/admin/transactions`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/transactions`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);
@@ -129,13 +129,28 @@ export default function AdminTransactionsPage() {
 
                     {/* User */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 flex items-center justify-center text-red-700 dark:text-rose-400 text-xs font-bold">
-                          {tx.userEmail?.[0]?.toUpperCase() || <MdPerson size={14} />}
+                      <div className="flex items-center gap-3">
+                        {tx.userImage ? (
+                          <img
+                            src={tx.userImage}
+                            alt={tx.userName || tx.userEmail || "User"}
+                            className="w-9 h-9 rounded-full object-cover border-2 border-gray-100 dark:border-white/10 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                            {(tx.userName || tx.userEmail || "?")[0].toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          {tx.userName && (
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[150px]">
+                              {tx.userName}
+                            </p>
+                          )}
+                          <p className={`truncate max-w-[160px] ${tx.userName ? "text-[11px] text-gray-500" : "text-sm text-gray-700 dark:text-gray-300"}`}>
+                            {tx.userEmail || tx.userId || "—"}
+                          </p>
                         </div>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-[160px]">
-                          {tx.userEmail || tx.userId || "—"}
-                        </p>
                       </div>
                     </td>
 

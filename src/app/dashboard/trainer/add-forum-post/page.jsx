@@ -109,7 +109,7 @@ export default function AddForumPostPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       {/* Page Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
@@ -128,8 +128,12 @@ export default function AddForumPostPage() {
         </div>
       )}
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-6 sm:p-8 shadow-sm">
+      {/* Layout Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column: Form */}
+        <div className="lg:col-span-2">
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-6 sm:p-8 shadow-sm">
         
         <div className="space-y-6">
           {/* Post Title */}
@@ -166,17 +170,31 @@ export default function AddForumPostPage() {
           {/* Image Upload */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cover Image</label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.10] bg-gray-50 dark:bg-white/[0.03] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 dark:file:bg-red-900/20 dark:file:text-rose-400"
-            />
-            {imagePreview && (
-              <div className="mt-4 relative w-full max-w-sm aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 shadow-sm">
+            {imagePreview ? (
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-white/10 shadow-sm group">
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer px-5 py-2.5 bg-white/90 text-gray-900 text-sm font-bold rounded-xl hover:bg-white transition-colors shadow-lg"
+                  >
+                    Change Image
+                  </label>
+                </div>
+                <input id="image-upload" type="file" name="image" accept="image/*" onChange={handleFileChange} className="hidden" />
               </div>
+            ) : (
+              <label
+                htmlFor="image-upload"
+                className="flex flex-col items-center justify-center w-full h-52 rounded-2xl border-2 border-dashed border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/[0.02] hover:bg-gray-100 dark:hover:bg-white/[0.04] hover:border-red-400 dark:hover:border-red-500/60 transition-all cursor-pointer group"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <PlusCircle size={28} className="text-red-500 dark:text-rose-400" />
+                </div>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Click to upload cover image</p>
+                <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 10MB</p>
+                <input id="image-upload" type="file" name="image" accept="image/*" onChange={handleFileChange} className="hidden" />
+              </label>
             )}
           </div>
 
@@ -206,7 +224,34 @@ export default function AddForumPostPage() {
           </button>
         </div>
 
-      </form>
+          </form>
+        </div>
+
+        {/* Right Column: Instructions and Benefits */}
+        <div className="space-y-6">
+           <div className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl p-6 shadow-sm">
+             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Posting Instructions</h3>
+             <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Keep it respectful and fitness-focused.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Do not post spam or promotional content.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Use clear and descriptive titles.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Select the most relevant category.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Include an image to make your post stand out.</li>
+             </ul>
+           </div>
+           
+           <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/10 dark:to-orange-900/10 border border-red-100 dark:border-red-900/20 rounded-2xl p-6 shadow-sm">
+             <h3 className="text-lg font-bold text-red-900 dark:text-red-100 mb-4">Benefits of Posting</h3>
+             <ul className="space-y-3 text-sm text-red-700 dark:text-red-300">
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-red-500 shrink-0 mt-0.5" /> Establish yourself as a fitness expert.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-red-500 shrink-0 mt-0.5" /> Help community members reach their goals.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-red-500 shrink-0 mt-0.5" /> Increase your visibility and attract more clients.</li>
+               <li className="flex items-start gap-2"><CheckCircle size={16} className="text-red-500 shrink-0 mt-0.5" /> Start meaningful discussions on wellness.</li>
+             </ul>
+           </div>
+        </div>
+
+      </div>
     </div>
   );
 }

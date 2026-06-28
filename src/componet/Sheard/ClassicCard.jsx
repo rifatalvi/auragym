@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Heart, Clock, Zap, Flame, Activity, User, CalendarDays, ArrowUpRight } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
-import { toast } from '@heroui/react';
+import toast from 'react-hot-toast';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },

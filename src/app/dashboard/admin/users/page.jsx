@@ -130,15 +130,7 @@ export default  function ManageUsersPage() {
     setConfirmData({ title, message });
     setPendingAction(() => action);
   };
-  const userToken = async ()=>{
-    // const token = await authClient.getToken();
-    const { data: tokenData } = await authClient.token();
-    const token = tokenData?.token;
-    return token;
-
-  }
-
-  console.log("token ", userToken());
+  
   const handleConfirm = async () => {
     setConfirmData(null);
     if (pendingAction) await pendingAction();

@@ -2,6 +2,7 @@ import { stripe } from '@/lib/stripe';
 import { Button, Card, CardFooter, CardHeader } from '@heroui/react';
 import Link from 'next/link';
 import { FaArrowRight, FaCheckCircle } from 'react-icons/fa';
+import BookingFinalizer from './BookingFinalizer';
 
 export default async function PaymentSuccess({ searchParams }) {
     const { session_id } = await searchParams;
@@ -25,32 +26,24 @@ export default async function PaymentSuccess({ searchParams }) {
         paymentStatus: session?.payment_status 
     };
 
-    const res = await fetch(`http://127.0.0.1:5000/api/classes/booking`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(paymentData)
-    });
-    // Optional: wait for response if needed
-    // const data = await res.json();
-
     return (
         <div className="min-h-[80vh] flex items-center justify-center bg-white dark:bg-[#0B0B0D] px-6 py-12 pt-24">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-900/10 via-transparent to-transparent -z-10" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-red-900/10 via-transparent to-transparent -z-10" />
 
             <Card className="w-full max-w-lg border border-gray-200 dark:border-white/5 bg-white/70 dark:bg-[#1C1C1F]/70 backdrop-blur-xl shadow-2xl p-4">
                 <CardHeader className="flex flex-col gap-1 items-center pb-6 text-center">
                     <div className="p-3 bg-green-500/10 rounded-full text-green-600 dark:text-green-500 border border-green-500/20 mb-2">
                         <FaCheckCircle size={48} className="animate-bounce" />
                     </div>
-                    <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                    <h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
                         Payment Successful!
                     </h1>
                     <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
                         Your class is booked. Here are your booking details.
                     </p>
                 </CardHeader>
+
+                <BookingFinalizer paymentData={paymentData} />
 
                 <div className="gap-6 bg-gray-50 dark:bg-[#0B0B0D]/40 p-6 rounded-2xl border border-gray-200 dark:border-white/5">
                     <div className="space-y-3">
@@ -73,7 +66,7 @@ export default async function PaymentSuccess({ searchParams }) {
                         </div>
                         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-slate-400">
                             <span>Transaction ID:</span>
-                            <span className="text-red-600 dark:text-red-400 font-semibold truncate max-w-[200px]">
+                            <span className="text-red-600 dark:text-red-400 font-semibold truncate max-w-50">
                                 {session?.payment_intent?.id}
                             </span>
                         </div>
@@ -82,7 +75,7 @@ export default async function PaymentSuccess({ searchParams }) {
                 <CardFooter className="flex flex-col sm:flex-row gap-3 pt-8 justify-center">
                     <Link href="/dashboard/user/booked-classes">
                         <Button
-                            className="w-full sm:w-auto bg-gradient-to-r from-red-700 to-red-600 text-white font-bold h-11 px-6 shadow-lg hover:shadow-red-500/20"
+                            className="w-full sm:w-auto bg-linear-to-r from-red-700 to-red-600 text-white font-bold h-11 px-6 shadow-lg hover:shadow-red-500/20"
                             radius="lg"
                             endContent={<FaArrowRight />}
                         >

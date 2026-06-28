@@ -126,7 +126,7 @@ const SignUpPage = () => {
     try {
       const { data, error } = await authClient.signIn.social({
         provider: 'google',
-        callbackURL: '/'
+        callbackURL: '/auth/signin'
       });
       if (error) {
         setError(error.message || 'Google sign-in failed');

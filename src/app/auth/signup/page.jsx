@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Dumbbell, Mail, Lock, ArrowRight, Loader2, User, Phone, Image as ImageIcon, Eye, EyeOff, Activity, BarChart3, Users } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, User, Phone, Image as ImageIcon, Eye, EyeOff } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
 const SignUpPage = () => {
@@ -106,6 +107,7 @@ const SignUpPage = () => {
       if (authError) {
         setError(authError.message || 'Something went wrong during signup.');
       } else {
+        await authClient.signOut();
         setSuccess('Welcome to AuraGym! Your account is ready.');
         setTimeout(() => {
           router.push('/auth/signin');
@@ -137,104 +139,84 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-[#050505] font-sans">
+    <div className="min-h-screen w-full flex bg-gray-50 dark:bg-[#060b13] transition-colors duration-300">
       
-      {/* Left Panel - Branding & Features (Hidden on mobile) */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#000000] via-[#0a0a0a] to-[#111111] border-r border-white/5 p-12 flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#FF6600]/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#FF6600]/5 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-3 mb-16 w-fit group">
-            <div className="bg-[#FF6600] p-2.5 rounded-xl text-white shadow-[0_0_15px_rgba(255,102,0,0.3)]">
-              <Dumbbell size={24} strokeWidth={2.5} />
+      {/* Left Panel - Image Cover */}
+      <div className="hidden lg:block w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-gray-900/60 z-10" />
+        <img 
+          src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80" 
+          alt="Gym background" 
+          className="w-full h-full object-cover scale-105"
+        />
+        <div className="absolute inset-0 z-20 flex flex-col justify-between p-14">
+          <Link href="/" className="flex items-center gap-3 w-fit">
+            <div className="relative w-12 h-12 bg-white/10 backdrop-blur-md rounded-full overflow-hidden p-2">
+              <Image src="/logo-ag.png" alt="AuraGym Logo" fill className="object-contain mix-blend-screen invert" style={{ filter: 'contrast(1.2)' }} priority />
             </div>
             <span className="font-extrabold text-2xl tracking-tight text-white">
-              Aura<span className="text-[#FF6600]">Gym</span>
+              Aura<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-400">Gym</span>
             </span>
           </Link>
 
-          <h1 className="text-5xl font-black text-white mb-6 leading-tight tracking-tight">
-            Elevate Your <br />
-            <span className="text-[#FF6600]">Fitness Journey</span>
-          </h1>
-          <p className="text-gray-400 text-lg mb-12 max-w-md leading-relaxed">
-            Experience a premium, distraction-free workout environment with state-of-the-art equipment.
-          </p>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 bg-[#121212]/80 p-4 rounded-2xl border border-white/5 backdrop-blur-md w-max pr-8 transition-colors hover:border-[#FF6600]/30">
-              <div className="p-2.5 bg-[#FF6600]/10 rounded-lg text-[#FF6600]">
-                <Activity size={20} />
-              </div>
-              <span className="text-gray-200 font-medium text-sm">Premium minimal aesthetics</span>
-            </div>
-            <div className="flex items-center gap-4 bg-[#121212]/80 p-4 rounded-2xl border border-white/5 backdrop-blur-md w-max pr-8 transition-colors hover:border-[#FF6600]/30">
-              <div className="p-2.5 bg-[#FF6600]/10 rounded-lg text-[#FF6600]">
-                <BarChart3 size={20} />
-              </div>
-              <span className="text-gray-200 font-medium text-sm">Top-tier modern equipment</span>
-            </div>
-            <div className="flex items-center gap-4 bg-[#121212]/80 p-4 rounded-2xl border border-white/5 backdrop-blur-md w-max pr-8 transition-colors hover:border-[#FF6600]/30">
-              <div className="p-2.5 bg-[#FF6600]/10 rounded-lg text-[#FF6600]">
-                <Users size={20} />
-              </div>
-              <span className="text-gray-200 font-medium text-sm">Exclusive member privileges</span>
-            </div>
+          <div>
+            <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
+              Start your journey.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-400">Join AuraGym today.</span>
+            </h1>
+            <p className="text-gray-300 text-lg max-w-md font-medium">
+              Create an account to track your progress, book classes, and connect with elite trainers.
+            </p>
           </div>
-        </div>
-
-        <div className="relative z-10 text-sm text-gray-600 font-medium">
-          © 2026 AuraGym. All rights reserved.
         </div>
       </div>
 
-      {/* Right Panel - Sign Up Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10 bg-[#0a0a0a] overflow-y-auto">
+      {/* Right Panel - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-y-auto bg-white dark:bg-[#060b13] transition-colors duration-300">
         
-        {/* Mobile Header (Shows only on small screens) */}
+        {/* Mobile Logo */}
         <div className="absolute top-6 left-6 lg:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <div className="bg-[#FF6600] p-2 rounded-lg text-white">
-              <Dumbbell size={20} strokeWidth={2.5} />
+            <div className="relative w-10 h-10 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden p-1.5">
+              <Image src="/logo-ag.png" alt="AuraGym Logo" fill className="object-contain dark:mix-blend-screen dark:invert" priority />
             </div>
-            <span className="font-bold text-xl text-white">Aura<span className="text-[#FF6600]">Gym</span></span>
+            <span className="font-bold text-xl text-gray-900 dark:text-white">Aura<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-500">Gym</span></span>
           </Link>
         </div>
 
-        <div className="w-full max-w-md flex flex-col my-auto py-10 lg:py-0">
+        <div className="w-full max-w-md my-auto pt-16 lg:pt-0 pb-8">
           
           <div className="mb-8">
-            <h2 className="text-3xl font-extrabold text-white mb-2 tracking-tight">Create Account</h2>
-            <p className="text-gray-400 text-sm">
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">Create Account</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
               Already a member?{' '}
-              <Link href="/auth/signin" className="text-[#FF6600] font-semibold hover:text-[#e65c00] transition-colors">
+              <Link href="/auth/signin" className="text-rose-600 dark:text-rose-400 font-bold hover:underline transition-colors">
                 Sign in
               </Link>
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm font-medium">
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium">
               {error}
             </div>
           )}
           
           {success && (
-            <div className="mb-6 p-4 bg-[#FF6600]/10 border border-[#FF6600]/30 rounded-xl text-[#FF6600] text-sm font-medium">
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-xl text-green-600 dark:text-green-400 text-sm font-medium">
               {success}
             </div>
           )}
 
-          <form onSubmit={handleSignup} className="flex flex-col gap-5 w-full">
+          <form onSubmit={handleSignup} className="flex flex-col gap-5">
             
-            {/* Image Upload Field */}
-            <div className="flex flex-col gap-1.5 w-full">
+            {/* Image Upload */}
+            <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Profile Image</label>
-              <div className="w-full bg-[#121212] border border-white/5 rounded-xl p-3 flex items-center gap-4">
-                <div className="h-12 w-12 bg-[#1a1a1a] border border-white/10 rounded-lg flex items-center justify-center text-gray-500 shrink-0 overflow-hidden relative">
+              <div className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-3 flex items-center gap-4">
+                <div className="h-12 w-12 bg-gray-200 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center text-gray-400 shrink-0 overflow-hidden relative">
                   {isUploading ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : imageUrl ? (
                     <img src={imageUrl} alt="Profile Preview" className="w-full h-full object-cover" />
                   ) : (
@@ -242,7 +224,7 @@ const SignUpPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col items-start gap-1">
-                  <label className={`cursor-pointer bg-[#1a1a1a] border border-white/10 px-3 py-1.5 rounded-md text-xs font-semibold text-gray-300 hover:bg-[#222222] transition-colors shadow-sm ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                  <label className={`cursor-pointer bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-md text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                     {isUploading ? 'Uploading...' : 'Choose Image'}
                     <input 
                       type="file" 
@@ -253,17 +235,17 @@ const SignUpPage = () => {
                     />
                   </label>
                   <span className="text-[10px] text-gray-500 font-medium">
-                    {isUploading ? 'Uploading to ImageBB...' : 'Required (JPEG, PNG, WEBP up to 5MB)'}
+                    Required (JPEG, PNG, WEBP up to 5MB)
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Full Name Input */}
-            <div className="flex flex-col gap-1.5 w-full">
-              <label className="text-sm font-medium text-gray-300">Full Name</label>
+            {/* Full Name */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Full Name</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                   <User size={16} />
                 </div>
                 <input
@@ -273,17 +255,17 @@ const SignUpPage = () => {
                   required
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full bg-[#121212] border border-white/5 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all shadow-sm"
+                  className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-11 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Email & Phone Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-sm font-medium text-gray-300">Email Address</label>
+            {/* Email & Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Email Address</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                     <Mail size={16} />
                   </div>
                   <input
@@ -293,15 +275,15 @@ const SignUpPage = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-[#121212] border border-white/5 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all shadow-sm"
+                    className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-11 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-sm font-medium text-gray-300">Phone</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                     <Phone size={16} />
                   </div>
                   <input
@@ -311,18 +293,18 @@ const SignUpPage = () => {
                     required
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full bg-[#121212] border border-white/5 rounded-xl py-3 pl-11 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all shadow-sm"
+                    className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-11 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Passwords Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-sm font-medium text-gray-300">Password</label>
+            {/* Passwords */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Password</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                     <Lock size={16} />
                   </div>
                   <input
@@ -332,20 +314,20 @@ const SignUpPage = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full bg-[#121212] border border-white/5 rounded-xl py-3 pl-11 pr-12 text-white placeholder-gray-600 focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all shadow-sm"
+                    className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-11 pr-12 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                   />
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="focus:outline-none text-gray-500 hover:text-gray-300 transition-colors">
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="focus:outline-none text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-sm font-medium text-gray-300">Confirm Password</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Confirm Password</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                     <Lock size={16} />
                   </div>
                   <input
@@ -355,10 +337,10 @@ const SignUpPage = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full bg-[#121212] border border-white/5 rounded-xl py-3 pl-11 pr-12 text-white placeholder-gray-600 focus:outline-none focus:border-[#FF6600] focus:ring-1 focus:ring-[#FF6600] transition-all shadow-sm"
+                    className="w-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl py-3 pl-11 pr-12 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                   />
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="focus:outline-none text-gray-500 hover:text-gray-300 transition-colors">
+                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="focus:outline-none text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -370,11 +352,10 @@ const SignUpPage = () => {
               Password must be at least 6 characters, with 1 uppercase and 1 lowercase letter.
             </p>
 
-            {/* Submit Button */}
             <button 
               type="submit" 
               disabled={loading || isUploading}
-              className="w-full mt-2 py-3.5 flex items-center justify-center gap-2 font-bold text-white rounded-xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed bg-[#FF6600] hover:bg-[#e65c00] shadow-[0_4px_14px_rgba(255,102,0,0.3)] hover:shadow-[0_6px_20px_rgba(255,102,0,0.4)]"
+              className="w-full mt-2 py-3.5 flex items-center justify-center gap-2 font-bold text-white rounded-xl transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-600/20"
             >
               {loading ? (
                 <Loader2 size={20} className="animate-spin" />
@@ -384,17 +365,16 @@ const SignUpPage = () => {
             </button>
             
             <div className="relative flex items-center py-2">
-              <div className="flex-grow border-t border-white/10"></div>
-              <span className="flex-shrink-0 mx-4 text-gray-600 text-xs font-semibold uppercase tracking-wider">Or</span>
-              <div className="flex-grow border-t border-white/10"></div>
+              <div className="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+              <span className="flex-shrink-0 mx-4 text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-wider">Or</span>
+              <div className="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
             </div>
 
-            {/* Google Sign In Button */}
             <button 
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-3.5 flex items-center justify-center gap-3 font-semibold text-gray-300 bg-[#121212] border border-white/5 rounded-xl hover:bg-[#1a1a1a] hover:border-white/10 hover:text-white transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full py-3.5 flex items-center justify-center gap-3 font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-[#121212] border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-sm"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

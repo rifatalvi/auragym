@@ -18,6 +18,11 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Hide navbar on auth routes
+  if (pathname?.startsWith('/auth')) {
+    return null;
+  }
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setMounted(true);

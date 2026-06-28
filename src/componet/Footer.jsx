@@ -9,8 +9,8 @@ import { MdMail, MdLocationOn, MdPhone } from 'react-icons/md';
 const Footer = () => {
   const pathname = usePathname();
 
-  // Hide footer on dashboard routes
-  if (pathname?.startsWith('/dashboard')) {
+  // Hide footer on dashboard and auth routes
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/auth')) {
     return null;
   }
 

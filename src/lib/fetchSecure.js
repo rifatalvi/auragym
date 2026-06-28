@@ -16,6 +16,7 @@ const getToken = async () => {
     // Use the official better-auth client method to get the JWT token
     const { data: jwtData } = await authClient.token();
     const token = jwtData?.token;
+    console.log(jwtData);
 
     if (token) {
       cachedToken = token;
@@ -39,6 +40,7 @@ const getToken = async () => {
  */
 export const fetchSecure = async (url, options = {}) => {
   const token = await getToken();
+  // console.log("token type:", typeof token, "| token value:", JSON.stringify(token));
 
   const headers = new Headers(options.headers || {});
 

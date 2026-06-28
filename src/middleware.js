@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 
 // Private routes that require authentication (any role)
-const privateRoutes = [
-  '/dashboard',
-  '/forum/',       // forum/[id] - Post Details
-  '/classes/',     // classes/[id] - Class Details
-  '/payment',
-];
+ const privateRoutes = [
+//   '/dashboard',
+//   '/forum/',       // forum/[id] - Post Details
+//   '/classes/',     // classes/[id] - Class Details
+//   '/payment',
+ ];
 
 // Routes accessible only to non-authenticated users (e.g. login/register)
 const authOnlyRoutes = ['/auth/signin', '/auth/signup'];
@@ -34,21 +34,21 @@ export function middleware(request) {
     pathname.startsWith(route)
   );
 
-  // 1. If trying to access a private route without being authenticated,
-  //    redirect to sign-in page and remember where they wanted to go
-  if (isPrivateRoute && !isAuthenticated) {
-    const signInUrl = new URL('/auth/signin', request.url);
-    signInUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(signInUrl);
-  }
+//   // 1. If trying to access a private route without being authenticated,
+//   //    redirect to sign-in page and remember where they wanted to go
+//   if (isPrivateRoute && !isAuthenticated) {
+//     const signInUrl = new URL('/auth/signin', request.url);
+//     signInUrl.searchParams.set('callbackUrl', pathname);
+//     return NextResponse.redirect(signInUrl);
+//   }
 
-  // 2. If already authenticated and trying to access signin/signup,
-  //    redirect them to the home page
-  if (isAuthOnlyRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+//   // 2. If already authenticated and trying to access signin/signup,
+//   //    redirect them to the home page
+//   if (isAuthOnlyRoute && isAuthenticated) {
+//     return NextResponse.redirect(new URL('/', request.url));
+//   }
 
-  return NextResponse.next();
+//   return NextResponse.next();
 }
 
 // Specify which paths the middleware should run on

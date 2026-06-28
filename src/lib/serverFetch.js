@@ -1,8 +1,9 @@
+'use server';
 import { headers } from "next/headers";
 import fetchSecure from './fetchSecure';
 import { auth } from "@/lib/auth";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const baseUrl = "http://localhost:3000";
 
 const handleStatus = async (res) => {
   if (!res.ok) {
@@ -13,15 +14,15 @@ const handleStatus = async (res) => {
 };
 
 export const getTokenServer = async () => {
-  const session = await auth.api.getToken({
+  const { data } = await auth.api.getToken({
     headers: await headers(),
   });
-  return session?.token || null;
+  return data?.token || null;  // ← .token যুক্ত করো
 };
 
 export const protectedServerFetch = async (path, options = {}) => {
   const token = await getTokenServer();
-  
+
   const res = await fetchSecure(`${baseUrl}${path}`, {
     ...options,
     headers: {

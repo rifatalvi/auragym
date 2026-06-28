@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Pagination } from "@heroui/react";
+import { authClient } from "@/lib/auth-client";
 
 function Toast({ toasts, removeToast }) {
   return (
@@ -21,8 +22,8 @@ function Toast({ toasts, removeToast }) {
             (t.type === 'success'
               ? 'bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-700 dark:text-green-400'
               : t.type === 'error'
-              ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400'
-              : 'bg-cyan-100 dark:bg-cyan-500/10 border-cyan-200 dark:border-cyan-500/30 text-cyan-700 dark:text-cyan-400')
+                ? 'bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400'
+                : 'bg-cyan-100 dark:bg-cyan-500/10 border-cyan-200 dark:border-cyan-500/30 text-cyan-700 dark:text-cyan-400')
           }
         >
           {t.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
@@ -104,7 +105,7 @@ function RoleDropdown({ user, onChangeRole }) {
   );
 }
 
-export default function ManageUsersPage() {
+export default  function ManageUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
@@ -129,6 +130,15 @@ export default function ManageUsersPage() {
     setConfirmData({ title, message });
     setPendingAction(() => action);
   };
+  const userToken = async ()=>{
+    // const token = await authClient.getToken();
+    const { data: tokenData } = await authClient.token();
+    const token = tokenData?.token;
+    return token;
+
+  }
+
+  console.log("token ", userToken());
   const handleConfirm = async () => {
     setConfirmData(null);
     if (pendingAction) await pendingAction();
@@ -358,7 +368,7 @@ export default function ManageUsersPage() {
                             'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold self-start border ' +
                             (user.role === 'admin' ? 'bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-500/20'
                               : user.role === 'trainer' ? 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-500/20'
-                              : 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20')
+                                : 'bg-gray-100 dark:bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-500/20')
                           }>
                             {user.role === 'admin' && <Shield size={11} />}
                             {user.role === 'trainer' && <Users size={11} />}
@@ -412,7 +422,7 @@ export default function ManageUsersPage() {
                       <span>Previous</span>
                     </Pagination.Previous>
                   </Pagination.Item>
-                  
+
                   {(() => {
                     const pages = [];
                     pages.push(1);
@@ -422,7 +432,7 @@ export default function ManageUsersPage() {
                     for (let i = start; i <= end; i++) pages.push(i);
                     if (page < totalPages - 2) pages.push("ellipsis");
                     if (totalPages > 1) pages.push(totalPages);
-                    
+
                     return pages.map((p, i) =>
                       p === "ellipsis" ? (
                         <Pagination.Item key={`ellipsis-${i}`}>

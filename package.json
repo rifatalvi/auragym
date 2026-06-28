@@ -17,6 +17,7 @@
     "better-auth": "^1.6.20",
     "date-fns": "^4.4.0",
     "framer-motion": "^12.40.0",
+    "jose-cjs": "^6.2.3",
     "lucide-react": "^1.21.0",
     "mongodb": "^7.3.0",
     "next": "^16.2.9",

@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "AuraGym — Elite Fitness Experience",
   description: "World-class trainers, 80+ weekly classes, and a vibrant community. Start your transformation at AuraGym today.",
+  icons: {
+    icon: '/logo-ag.png',
+  },
 };
 
 export default function RootLayout({ children }) {

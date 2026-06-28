@@ -15,7 +15,7 @@ export default function BookingFinalizer({ paymentData }) {
       }
 
       try {
-        const response = await fetchSecure(`${apiUrl}/api/classes/booking`, {
+        const response = await fetchSecure(`/api/classes/booking`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(paymentData),

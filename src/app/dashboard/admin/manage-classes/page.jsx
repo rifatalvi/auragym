@@ -74,7 +74,7 @@ export default function ManageClassesPage() {
       if (status !== "all") params.set("status", status);
       if (visibility !== "all") params.set("visibility", visibility);
 
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes?${params}`);
+      const res = await fetchSecure(`/api/admin/classes?${params}`);
       if (res.ok) {
         const data = await res.json();
         setClasses(data.classes);
@@ -104,8 +104,8 @@ export default function ManageClassesPage() {
     try {
       const method = action === "delete" ? "DELETE" : "PATCH";
       const url = action === "delete"
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes/${id}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/admin/classes/${id}/${action}`;
+        ? `/api/admin/classes/${id}`
+        : `/api/admin/classes/${id}/${action}`;
 
       const res = await fetchSecure(url, { method });
 

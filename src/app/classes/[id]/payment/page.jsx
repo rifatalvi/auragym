@@ -26,7 +26,7 @@ export default function PaymentPage() {
   useEffect(() => {
     const fetchClass = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}`);
+        const res = await fetch(`/api/classes/${id}`);
         if (!res.ok) throw new Error("Class not found");
         const data = await res.json();
         setCls(data);
@@ -44,7 +44,7 @@ export default function PaymentPage() {
     const checkBooking = async () => {
       if (!session?.user?.id || !id) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/check?classId=${id}&userId=${session.user.id}`);
+        const res = await fetch(`/api/bookings/check?classId=${id}&userId=${session.user.id}`);
         if (res.ok) {
           const data = await res.json();
           setIsBooked(data.isBooked);

@@ -1,67 +1,71 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-// Private routes that require authentication (any role)
- const privateRoutes = [
-//   '/dashboard',
-//   '/forum/',       // forum/[id] - Post Details
-//   '/classes/',     // classes/[id] - Class Details
-//   '/payment',
- ];
+/**
+ * Protected routes যেখানে login ছাড়া access নেই।
+ * /classes/[id] এবং /forum/[id] — এই দুটি route protect করা হয়েছে।
+ *
+ * Better Auth এর cookiePrefix "auragym" অনুযায়ী
+ * session cookie এর নাম: "auragym.session_token"
+ */
 
-// Routes accessible only to non-authenticated users (e.g. login/register)
-const authOnlyRoutes = ['/auth/signin', '/auth/signup'];
+// Protected path patterns
+const PROTECTED_PATTERNS = [
+  /^\/classes\/[^/]+$/, // /classes/:id
+  /^\/forum\/[^/]+$/,   // /forum/:id
+  /^\/dashboard(\/.*)?$/, // /dashboard/*
+];
+
+// Login page path
+const LOGIN_PATH = "/auth/signin";
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Check if user has a valid better-auth session cookie
-  // better-auth stores the session in a cookie with the configured prefix
-  const sessionCookie =
-    request.cookies.get('auragym_session_token') ||
-    request.cookies.get('better-auth.session_token') ||
-    request.cookies.get('__Secure-auragym_session_token') ||
-    request.cookies.get('__Secure-better-auth.session_token');
-
-  const isAuthenticated = !!sessionCookie?.value;
-
-  // Check if this is a private route
-  const isPrivateRoute = privateRoutes.some((route) =>
-    pathname.startsWith(route)
+  // Check if this path needs protection
+  const isProtected = PROTECTED_PATTERNS.some((pattern) =>
+    pattern.test(pathname)
   );
 
-  // Check if this is an auth-only route (signin/signup)
-  const isAuthOnlyRoute = authOnlyRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  if (!isProtected) {
+    return NextResponse.next();
+  }
 
-//   // 1. If trying to access a private route without being authenticated,
-//   //    redirect to sign-in page and remember where they wanted to go
-//   if (isPrivateRoute && !isAuthenticated) {
-//     const signInUrl = new URL('/auth/signin', request.url);
-//     signInUrl.searchParams.set('callbackUrl', pathname);
-//     return NextResponse.redirect(signInUrl);
-//   }
+  // Better Auth session cookie check
+  // cookiePrefix: "auragym" → cookie name: "auragym.session_token"
+  const sessionToken =
+    request.cookies.get("auragym.session_token")?.value ||
+    request.cookies.get("better-auth.session_token")?.value ||
+    request.cookies.get("session_token")?.value;
 
-//   // 2. If already authenticated and trying to access signin/signup,
-//   //    redirect them to the home page
-//   if (isAuthOnlyRoute && isAuthenticated) {
-//     return NextResponse.redirect(new URL('/', request.url));
-//   }
+  if (!sessionToken) {
+    // Login নেই → login পেজে redirect করো, callbackUrl সহ
+    const loginUrl = new URL(LOGIN_PATH, request.url);
+    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 
-//   return NextResponse.next();
+  // Session আছে → allow করো
+  return NextResponse.next();
 }
 
-// Specify which paths the middleware should run on
 export const config = {
   matcher: [
     /*
-     * Match all request paths EXCEPT for:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico
-     * - public folder files
-     * - api routes (especially /api/auth/* used by better-auth)
+     * Match করবে:
+     * - /classes/[id]  (class details - private)
+     * - /forum/[id]    (forum post details - private)
+     * - /dashboard/*   (dashboard pages - private)
+     *
+     * Match করবে না (Public):
+     * - /classes        (all classes list)
+     * - /forum          (forum list)
+     * - /_next, /api, static files
+     *
+     * NOTE: ":id+" মানে অন্তত একটা segment থাকতে হবে।
+     *       ফলে /classes এবং /forum list page গুলো public থাকবে।
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/).*)',
+    "/classes/:id+",
+    "/forum/:id+",
+    "/dashboard/:path*",
   ],
 };

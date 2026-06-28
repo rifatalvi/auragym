@@ -24,7 +24,7 @@ export const ClassCard = ({ cls }) => {
   // Check initial favorite status
   useEffect(() => {
     if (session?.user?.email && cls._id) {
-      fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${cls._id}&userId=${session.user.email}`)
+      fetchSecure(`/api/favorites/check?classId=${cls._id}&userId=${session.user.email}`)
         .then(res => res.json())
         .then(data => setIsFavorited(data.isFavorited))
         .catch(err => console.error(err));
@@ -43,7 +43,7 @@ export const ClassCard = ({ cls }) => {
     setIsFavorited(!isFavorited);
     
     try {
-      await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
+      await fetchSecure(`/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId: cls._id, userId: session.user.email })

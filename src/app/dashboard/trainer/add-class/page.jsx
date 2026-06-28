@@ -96,7 +96,7 @@ export default function AddClassPage() {
         status: "Pending",
       };
 
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/classes`, {
+      const res = await fetchSecure(`/api/classes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

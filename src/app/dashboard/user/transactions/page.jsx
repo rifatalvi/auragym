@@ -15,7 +15,7 @@ export default function TransactionsPage() {
     const fetchTransactions = async () => {
       if (!session?.user?.id) return;
       try {
-        const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.id}/payments`);
+        const res = await fetchSecure(`/api/users/${session.user.id}/payments`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);

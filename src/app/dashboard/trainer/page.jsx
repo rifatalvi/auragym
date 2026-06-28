@@ -20,8 +20,8 @@ export default function TrainerOverviewPage() {
       if (!session?.user?.email) return;
       try {
         const [classesRes, bookingsRes] = await Promise.all([
-          fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`),
-          fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/bookings`)
+          fetchSecure(`/api/trainer/${session.user.email}/classes`),
+          fetchSecure(`/api/trainer/${session.user.email}/bookings`)
         ]);
 
         if (classesRes.ok) {

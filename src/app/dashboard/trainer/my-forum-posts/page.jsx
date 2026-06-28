@@ -15,7 +15,7 @@ export default function MyForumPostsPage() {
   const fetchPosts = useCallback(async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum?all=true`);
+      const res = await fetchSecure(`/api/forum?all=true`);
       const data = await res.json();
 
       const myPosts = (data.posts || []).filter(
@@ -44,7 +44,7 @@ export default function MyForumPostsPage() {
 
     setDeleteLoading(postId);
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`, {
+      const res = await fetchSecure(`/api/forum/${postId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

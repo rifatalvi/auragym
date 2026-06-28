@@ -26,7 +26,7 @@ export default function NotificationDropdown() {
   const fetchNotifications = async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${session.user.email}`);
+      const res = await fetchSecure(`/api/notifications/${session.user.email}`);
       if (res.ok) {
         const data = await res.json();
         setNotifications(data);
@@ -46,7 +46,7 @@ export default function NotificationDropdown() {
 
   const markAsRead = async (id) => {
     try {
-      await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${id}/mark-read`, {
+      await fetchSecure(`/api/notifications/${id}/mark-read`, {
         method: "PATCH"
       });
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));

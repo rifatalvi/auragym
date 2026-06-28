@@ -74,7 +74,7 @@ export default function AddForumPostPage() {
         role: session.user.role || "admin",
       };
 
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum`, {
+      const res = await fetchSecure(`/api/forum`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

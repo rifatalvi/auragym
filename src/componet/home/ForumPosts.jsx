@@ -39,7 +39,7 @@ export default function ForumPosts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/latest`)
+    fetchSecure(`/api/forum/latest`)
       .then((r) => r.json())
       .then((data) => {
         setPosts(data);

@@ -9,6 +9,7 @@ import {
   Calendar, MapPin, Plus, Check
 } from "lucide-react";
 import Link from "next/link";
+import fetchSecure from "@/lib/fetchSecure";
 
 export default function ClassDetailsPage() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ export default function ClassDetailsPage() {
   useEffect(() => {
     const fetchClassDetails = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}`);
+        const res = await fetch(`/api/classes/${id}`);
         if (!res.ok) throw new Error("Failed to fetch class details");
         const data = await res.json();
         setCls(data);
@@ -48,8 +49,8 @@ export default function ClassDetailsPage() {
       if (!session?.user?.email || !id) return;
       try {
         const [bookingRes, favRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/check?classId=${id}&userId=${session.user.email}`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/check?classId=${id}&userId=${session.user.email}`)
+          fetch(`/api/bookings/check?classId=${id}&userId=${session.user.email}`),
+          fetch(`/api/favorites/check?classId=${id}&userId=${session.user.email}`)
         ]);
         if (bookingRes.ok) setIsBooked((await bookingRes.json()).isBooked);
         if (favRes.ok) setIsFavorited((await favRes.json()).isFavorited);
@@ -79,7 +80,7 @@ export default function ClassDetailsPage() {
     }
     setActionLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
+      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites/toggle`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ classId: id, userId: session.user.email })
@@ -413,7 +414,7 @@ export default function ClassDetailsPage() {
                 {(() => {
                   const isFull = cls.maxStudents && (cls.bookingCount || 0) >= cls.maxStudents;
                   const isOwnClass = session?.user?.email && cls.trainerEmail && session.user.email === cls.trainerEmail;
-                  
+
                   return (
                     <button
                       onClick={(e) => {
@@ -425,11 +426,10 @@ export default function ClassDetailsPage() {
                         handleBookNow(e);
                       }}
                       disabled={isBooked || isFull || isOwnClass}
-                      className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${
-                        isBooked || isFull || isOwnClass
-                          ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
-                          : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
-                      }`}
+                      className={`book-btn w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 ${isBooked || isFull || isOwnClass
+                        ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-[#5a5a5e] cursor-not-allowed"
+                        : "bg-red-700 dark:bg-[#C8102E] hover:bg-red-800 dark:hover:bg-[#a30d25] text-white"
+                        }`}
                     >
                       {isBooked ? (
                         <><Check className="w-4 h-4" /> Already booked</>

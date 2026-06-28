@@ -35,7 +35,7 @@ export default function CommunityForumPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-[#060b13] pt-24 pb-12 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
@@ -69,9 +69,9 @@ export default function CommunityForumPage() {
               >
                 {/* Image Section */}
                 <div className="relative h-56 overflow-hidden">
-                  <img 
-                    src={post.image || getImage(post.category)} 
-                    alt={post.title} 
+                  <img
+                    src={post.image || getImage(post.category)}
+                    alt={post.title}
                     className="w-full h-full object-cover"
                   />
                   {/* Category Badge over image */}
@@ -103,11 +103,11 @@ export default function CommunityForumPage() {
                   <p className="text-slate-500 dark:text-slate-400 text-sm mb-5 line-clamp-2 leading-relaxed">
                     {post.content || post.description || "No description provided."}
                   </p>
-                  
+
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-6">
-                     <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">gym</span>
-                     <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">fitness</span>
+                    <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">gym</span>
+                    <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">fitness</span>
                   </div>
 
                   <div className="border-t border-gray-100 dark:border-white/5 my-4" />

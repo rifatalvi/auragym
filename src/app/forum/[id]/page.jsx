@@ -290,7 +290,7 @@ export default function PostDetailsPage({ params }) {
 
   // Fetch post
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}`)
+    fetch(`/api/forum/${postId}`)
       .then((r) => r.json())
       .then((data) => {
         setPost(data);
@@ -306,7 +306,7 @@ export default function PostDetailsPage({ params }) {
   // Fetch comments
   const fetchComments = useCallback(async () => {
     try {
-      const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/comments`);
+      const r = await fetch(`/api/forum/${postId}/comments`);
       const data = await r.json();
       setComments(Array.isArray(data) ? data : []);
     } catch { /* ignore */ }
@@ -328,7 +328,7 @@ export default function PostDetailsPage({ params }) {
     setLikeCount((p) => wasLiked ? p - 1 : p + 1);
     setLikeLoading(true);
     try {
-      const r = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/like`, { method: 'PATCH' });
+      const r = await fetchSecure(`/api/forum/${postId}/like`, { method: 'PATCH' });
       if (r.ok) { const d = await r.json(); setLiked(d.liked); setLikeCount(d.upvotes); }
       else { setLiked(wasLiked); setLikeCount((p) => wasLiked ? p + 1 : p - 1); }
     } catch { setLiked(wasLiked); setLikeCount((p) => wasLiked ? p + 1 : p - 1); }
@@ -341,7 +341,7 @@ export default function PostDetailsPage({ params }) {
     if (!newComment.trim() || commentSubmitting) return;
     setCommentSubmitting(true);
     try {
-      const r = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/comments`, {
+      const r = await fetchSecure(`/api/forum/${postId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: newComment.trim(), parentId: null, authorName: userName }),
@@ -356,7 +356,7 @@ export default function PostDetailsPage({ params }) {
     if (!replyText.trim() || replySubmitting) return;
     setReplySubmitting(true);
     try {
-      const r = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/comments`, {
+      const r = await fetchSecure(`/api/forum/${postId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: replyText.trim(), parentId, authorName: userName }),
@@ -372,7 +372,7 @@ export default function PostDetailsPage({ params }) {
     setEditSubmitting(true);
     try {
       const r = await fetchSecure(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/comments/${commentId}`,
+        `/api/forum/${postId}/comments/${commentId}`,
         { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: editText.trim() }) }
       );
       if (r.ok) { setEditingId(null); setEditText(''); await fetchComments(); }
@@ -386,7 +386,7 @@ export default function PostDetailsPage({ params }) {
     setDeleteSubmitting(true);
     try {
       const r = await fetchSecure(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/forum/${postId}/comments/${deleteTarget.id}`,
+        `/api/forum/${postId}/comments/${deleteTarget.id}`,
         { method: 'DELETE' }
       );
       if (r.ok) { setDeleteTarget(null); await fetchComments(); }

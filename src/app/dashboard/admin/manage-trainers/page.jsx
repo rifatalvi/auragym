@@ -91,7 +91,7 @@ export default function ManageTrainersPage() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
       // We assume passing role=trainer returns only trainers
-      const res = await fetchSecure(`${apiUrl}/api/admin/users?page=${page}&limit=5&search=${search}&role=trainer`);
+      const res = await fetchSecure(`/api/admin/users?page=${page}&limit=5&search=${search}&role=trainer`);
       if (!res.ok) throw new Error("Failed to fetch trainers");
       const data = await res.json();
       setTrainers(data.users || []);
@@ -129,7 +129,7 @@ export default function ManageTrainersPage() {
       async () => {
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
-          const res = await fetchSecure(`${apiUrl}/api/admin/users/${userId}/role`, {
+          const res = await fetchSecure(`/api/admin/users/${userId}/role`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ role: "user" }),

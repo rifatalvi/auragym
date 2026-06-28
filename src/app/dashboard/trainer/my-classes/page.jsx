@@ -23,7 +23,7 @@ export default function MyClassesPage() {
   const fetchClasses = useCallback(async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/trainer/${session.user.email}/classes`);
+      const res = await fetchSecure(`/api/trainer/${session.user.email}/classes`);
       if (res.ok) {
         const data = await res.json();
         setClasses(data);
@@ -53,7 +53,7 @@ export default function MyClassesPage() {
     try {
       // In a real scenario, the reason could be sent to the backend for logging
       // e.g. body: JSON.stringify({ reason: deleteReason })
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${deletingClass._id}`, {
+      const res = await fetchSecure(`/api/classes/${deletingClass._id}`, {
         method: "DELETE"
       });
 
@@ -73,7 +73,7 @@ export default function MyClassesPage() {
     setViewingAttendees(classId);
     setAttendeesLoading(true);
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${classId}/attendees`);
+      const res = await fetchSecure(`/api/classes/${classId}/attendees`);
       if (res.ok) {
         const data = await res.json();
         setAttendees(data);
@@ -88,7 +88,7 @@ export default function MyClassesPage() {
   const handleUpdateClass = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${editingClass._id}`, {
+      const res = await fetchSecure(`/api/classes/${editingClass._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingClass),

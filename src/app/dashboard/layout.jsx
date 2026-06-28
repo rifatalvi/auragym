@@ -24,7 +24,7 @@ const DashboardLayout = ({children}) => {
 
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL;
-                const res = await fetchSecure(`${apiUrl}/api/users/${session.user.email}/stats`);
+                const res = await fetchSecure(`/api/users/${session.user.email}/stats`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.userStatus === 'blocked') {

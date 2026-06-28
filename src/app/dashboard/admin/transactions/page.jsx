@@ -15,7 +15,7 @@ export default function AdminTransactionsPage() {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/transactions`);
+        const res = await fetchSecure(`/api/admin/transactions`);
         if (res.ok) {
           const data = await res.json();
           setTransactions(data);

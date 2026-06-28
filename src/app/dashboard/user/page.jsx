@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import fetchSecure from '../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { motion } from "framer-motion";
-import { 
-  MdOutlineLibraryBooks, 
-  MdFavorite, 
-  MdVerifiedUser, 
-  MdPendingActions, 
+import {
+  MdOutlineLibraryBooks,
+  MdFavorite,
+  MdVerifiedUser,
+  MdPendingActions,
   MdCancel,
   MdMail,
   MdBadge,
@@ -33,7 +33,7 @@ export default function UserOverviewPage() {
     const fetchStats = async () => {
       if (!session?.user?.email) return;
       try {
-        const res = await fetchSecure(`$\{process.env.NEXT_PUBLIC_API_URL\}/api/users/${session.user.email}/stats`);
+        const res = await fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.email}/stats`);
         if (res.ok) {
           const data = await res.json();
           setStats(data);
@@ -78,9 +78,9 @@ export default function UserOverviewPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      
+
       {/* ── Page Header ── */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
@@ -138,16 +138,16 @@ export default function UserOverviewPage() {
         </motion.div>
       )}
 
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
         className="grid grid-cols-1 md:grid-cols-12 gap-6"
       >
-        
+
         {/* ── Statistics Section (Left Column) ── */}
         <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 h-fit">
-          
+
           {/* Total Booked Classes Card */}
           <motion.div variants={itemVariants} className="bg-white dark:bg-[#120010] p-6 rounded-2xl border border-gray-100 dark:border-white/[0.05] shadow-sm hover:shadow-md dark:shadow-none transition-shadow relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-50 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300">
@@ -159,7 +159,7 @@ export default function UserOverviewPage() {
               </div>
               <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{stats.totalBookings}</h3>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Booked Classes</p>
-              
+
               <Link href="/dashboard/user/booked-classes" className="inline-block mt-4 text-xs font-semibold text-red-600 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors">
                 View Bookings →
               </Link>
@@ -189,7 +189,7 @@ export default function UserOverviewPage() {
             <div className="bg-gradient-to-br from-gray-900 to-black dark:from-[#1a0016] dark:to-[#0a0007] p-6 rounded-2xl border border-gray-800 dark:border-rose-900/30 shadow-xl overflow-hidden relative">
               {/* Background accent */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-600/20 rounded-full blur-3xl pointer-events-none"></div>
-              
+
               <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-bold text-white mb-1">Trainer Application</h3>
@@ -197,10 +197,10 @@ export default function UserOverviewPage() {
                     Want to become an elite trainer at AuraGym? Apply now to lead your own fitness classes.
                   </p>
                 </div>
-                
+
                 <div className="flex-shrink-0">
                   {!stats.applicationStatus ? (
-                    <Link 
+                    <Link
                       href="/dashboard/user/apply-trainer"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-all shadow-lg shadow-red-600/20 hover:scale-105 active:scale-95"
                     >
@@ -209,13 +209,12 @@ export default function UserOverviewPage() {
                     </Link>
                   ) : (
                     <div className="flex flex-col items-end gap-2">
-                      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border ${
-                        stats.applicationStatus === 'Pending' 
-                          ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
-                          : stats.applicationStatus === 'Rejected'
+                      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border ${stats.applicationStatus === 'Pending'
+                        ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
+                        : stats.applicationStatus === 'Rejected'
                           ? 'bg-red-500/10 border-red-500/30 text-red-500'
                           : 'bg-green-500/10 border-green-500/30 text-green-500'
-                      }`}>
+                        }`}>
                         {stats.applicationStatus === 'Pending' && <MdPendingActions size={18} />}
                         {stats.applicationStatus === 'Rejected' && <MdCancel size={18} />}
                         {stats.applicationStatus === 'Accepted' && <MdVerifiedUser size={18} />}
@@ -234,8 +233,8 @@ export default function UserOverviewPage() {
                     <div>
                       <h4 className="text-xs font-bold uppercase tracking-wider text-red-400 mb-1">Admin Feedback</h4>
                       <p className="text-sm text-gray-300 italic">{stats.applicationFeedback}</p>
-                      
-                      <Link 
+
+                      <Link
                         href="/dashboard/user/apply-trainer"
                         className="inline-block mt-3 text-xs font-bold text-white bg-red-600/80 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors"
                       >
@@ -252,15 +251,15 @@ export default function UserOverviewPage() {
         {/* ── Profile Details Section (Right Column) ── */}
         <motion.div variants={itemVariants} className="md:col-span-4 h-full">
           <div className="bg-white dark:bg-[#120010] p-6 rounded-2xl border border-gray-100 dark:border-white/[0.05] shadow-sm flex flex-col h-full items-center text-center">
-            
+
             {/* Profile Avatar */}
             <div className="relative mb-5 mt-2">
               <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white dark:border-[#0a0007] shadow-xl relative z-10 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
                 {user?.image ? (
-                  <Image 
-                    src={user.image} 
-                    alt={user?.name || "Profile"} 
-                    fill 
+                  <Image
+                    src={user.image}
+                    alt={user?.name || "Profile"}
+                    fill
                     className="object-cover"
                   />
                 ) : (

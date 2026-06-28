@@ -20,11 +20,11 @@ import {
 
 
 const categoryConfig = {
-  Yoga:     { icon: Sparkles, color: "#f97316" },
-  Cardio:   { icon: Heart,    color: "#ef4444" },
+  Yoga: { icon: Sparkles, color: "#f97316" },
+  Cardio: { icon: Heart, color: "#ef4444" },
   Strength: { icon: Dumbbell, color: "#a855f7" },
-  Pilates:  { icon: Activity, color: "#06b6d4" },
-  Zumba:    { icon: Flame,    color: "#22c55e" },
+  Pilates: { icon: Activity, color: "#06b6d4" },
+  Zumba: { icon: Flame, color: "#22c55e" },
 };
 
 const CATEGORIES = Object.keys(categoryConfig);
@@ -54,28 +54,28 @@ const SkeletonCard = () => (
 
 
 const ClassesPageInner = () => {
-  const router        = useRouter();
-  const pathname      = usePathname();
-  const searchParams  = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
- 
-  const [searchInput, setSearchInput]       = useState(searchParams.get("search") || "");
-  const [classes, setClasses]               = useState([]);
-  const [totalPages, setTotalPages]         = useState(1);
-  const [totalClasses, setTotalClasses]     = useState(0);
-  const [loading, setLoading]               = useState(true);
-  const debounceRef                         = useRef(null);
+
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const [classes, setClasses] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalClasses, setTotalClasses] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const debounceRef = useRef(null);
 
   // Derived values directly from URL (single source of truth)
-  const urlSearch   = searchParams.get("search")   || "";
+  const urlSearch = searchParams.get("search") || "";
   const urlCategory = searchParams.get("category") || "";
-  const urlPage     = parseInt(searchParams.get("page") || "1", 10);
+  const urlPage = parseInt(searchParams.get("page") || "1", 10);
 
 
   const pushURL = useCallback(
     ({ search, category, page }) => {
       const params = new URLSearchParams();
-      if (search)   params.set("search",   search);
+      if (search) params.set("search", search);
       if (category) params.set("category", category);
       if (page && page !== 1) params.set("page", String(page));
 
@@ -94,13 +94,13 @@ const ClassesPageInner = () => {
     return () => clearTimeout(debounceRef.current);
   }, [searchInput]);  // eslint-disable-line react-hooks/exhaustive-deps
 
-  
+
   const handleCategoryClick = (cat) => {
     const next = urlCategory === cat ? "" : cat;
     pushURL({ search: urlSearch, category: next, page: 1 });
   };
 
-  
+
   const handlePageChange = (p) => {
     pushURL({ search: urlSearch, category: urlCategory, page: p });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -121,21 +121,21 @@ const ClassesPageInner = () => {
     pushURL({ search: urlSearch, category: "", page: 1 });
   };
 
-  
+
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading(true);
       try {
         const params = new URLSearchParams({ page: urlPage, limit: LIMIT });
-        if (urlSearch)   params.set("search",   urlSearch);
+        if (urlSearch) params.set("search", urlSearch);
         if (urlCategory) params.set("category", urlCategory);
 
-        const res  = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes?${params}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes?${params}`);
         const data = await res.json();
 
         if (res.ok) {
-          setClasses(data.classes     || []);
-          setTotalPages(data.totalPages   || 1);
+          setClasses(data.classes || []);
+          setTotalPages(data.totalPages || 1);
           setTotalClasses(data.totalClasses || 0);
         }
       } catch (err) {
@@ -267,9 +267,9 @@ const ClassesPageInner = () => {
                   className="mt-2 text-[11px] text-gray-400 dark:text-gray-600 font-mono text-left px-1 truncate"
                 >
                   — /classes
-                  {urlSearch   && <span className="text-orange-500">?search=<span className="text-orange-400">{urlSearch}</span></span>}
+                  {urlSearch && <span className="text-orange-500">?search=<span className="text-orange-400">{urlSearch}</span></span>}
                   {urlCategory && <span className="text-purple-500">{urlSearch ? "&" : "?"}category=<span className="text-purple-400">{urlCategory}</span></span>}
-                  {urlPage > 1  && <span className="text-blue-400">page=<span className="text-blue-300">{urlPage}</span></span>}
+                  {urlPage > 1 && <span className="text-blue-400">page=<span className="text-blue-300">{urlPage}</span></span>}
                 </motion.p>
               )}
             </motion.div>
@@ -284,11 +284,10 @@ const ClassesPageInner = () => {
               {/* All */}
               <button
                 onClick={clearAll}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
-                  urlCategory === "" && !urlSearch
-                    ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/30 scale-105"
-                    : "bg-white dark:bg-[#0e1117] border-gray-200 dark:border-white/[0.07] text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-500"
-                }`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${urlCategory === "" && !urlSearch
+                  ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/30 scale-105"
+                  : "bg-white dark:bg-[#0e1117] border-gray-200 dark:border-white/[0.07] text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-500"
+                  }`}
               >
                 <SlidersHorizontal size={12} />
                 All
@@ -302,11 +301,10 @@ const ClassesPageInner = () => {
                     key={cat}
                     onClick={() => handleCategoryClick(cat)}
                     style={active ? { background: color, borderColor: color, boxShadow: `0 8px 24px ${color}44` } : {}}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
-                      active
-                        ? "text-white scale-105"
-                        : "bg-white dark:bg-[#0e1117] border-gray-200 dark:border-white/[0.07] text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-500"
-                    }`}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${active
+                      ? "text-white scale-105"
+                      : "bg-white dark:bg-[#0e1117] border-gray-200 dark:border-white/[0.07] text-gray-600 dark:text-gray-400 hover:border-orange-400 hover:text-orange-500"
+                      }`}
                   >
                     <CatIcon size={12} />
                     {cat}
@@ -350,7 +348,7 @@ const ClassesPageInner = () => {
               {urlSearch && (
                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-xs font-semibold text-orange-500">
                   <Search size={10} />
-                 {urlSearch};
+                  {urlSearch};
                   <button onClick={clearSearch} className="ml-0.5 hover:text-orange-700"><X size={10} /></button>
                 </span>
               )}
@@ -433,12 +431,12 @@ const ClassesPageInner = () => {
         {/* â”€â”€ Pagination â”€â”€ */}
         {!loading && totalPages > 1 && (
           <div className="flex justify-center mt-14">
-            <CustomPagination 
-              page={urlPage} 
-              totalPages={totalPages} 
-              totalItems={totalClasses} 
-              itemsPerPage={LIMIT} 
-              onChange={handlePageChange} 
+            <CustomPagination
+              page={urlPage}
+              totalPages={totalPages}
+              totalItems={totalClasses}
+              itemsPerPage={LIMIT}
+              onChange={handlePageChange}
             />
           </div>
         )}

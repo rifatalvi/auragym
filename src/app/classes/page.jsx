@@ -244,7 +244,7 @@ const ClassesPageInner = () => {
                 <input
                   type="text"
                   id="class-search"
-                  placeholder="Search by class nameâ€¦"
+                  placeholder="Search by class name..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="w-full pl-11 pr-12 py-4 text-sm font-medium rounded-2xl bg-white dark:bg-[#0e1117] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/60 shadow-lg dark:shadow-black/30 transition-all duration-200"
@@ -274,7 +274,7 @@ const ClassesPageInner = () => {
               )}
             </motion.div>
 
-            {/* â”€â”€ Category Pill Filters â”€â”€ */}
+
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -331,7 +331,7 @@ const ClassesPageInner = () => {
               <>
                 Showing{" "}
                 <span className="font-bold text-gray-900 dark:text-white">
-                  {(urlPage - 1) * LIMIT + 1}â€“{Math.min(urlPage * LIMIT, totalClasses)}
+                  {(urlPage - 1) * LIMIT + 1}-{Math.min(urlPage * LIMIT, totalClasses)}
                 </span>{" "}
                 of{" "}
                 <span className="font-bold text-gray-900 dark:text-white">{totalClasses}</span> classes
@@ -368,7 +368,7 @@ const ClassesPageInner = () => {
           )}
         </div>
 
-        {/* â”€â”€ Class Grid â”€â”€ */}
+
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div
@@ -428,7 +428,7 @@ const ClassesPageInner = () => {
           )}
         </AnimatePresence>
 
-        {/* â”€â”€ Pagination â”€â”€ */}
+
         {!loading && totalPages > 1 && (
           <div className="flex justify-center mt-14">
             <CustomPagination
@@ -445,7 +445,7 @@ const ClassesPageInner = () => {
   );
 };
 
-// Suspense wrapper â€” required by Next.js when using useSearchParams in a client component
+// Suspense wrapper required by Next.js when using useSearchParams in a client component
 export default function ClassesPage() {
   return (
     <Suspense

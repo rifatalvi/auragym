@@ -156,246 +156,246 @@ export default function ManageClassesPage() {
 
   return (
     <>
-      <ConfirmModal 
-        isOpen={!!deleteConfirmId} 
-        onConfirm={handleConfirmDelete} 
-        onCancel={() => setDeleteConfirmId(null)} 
+      <ConfirmModal
+        isOpen={!!deleteConfirmId}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirmId(null)}
       />
       <div className="max-w-6xl mx-auto space-y-6">
-      {/* Page Header */}
-      <div className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
-          <MdLibraryBooks className="text-red-700 dark:text-rose-400" size={16} />
-          <span className="text-xs font-bold text-red-700 dark:text-rose-400 uppercase tracking-wider">Manage Classes</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">All Classes</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
-              Review, approve, or reject classes submitted by trainers.
-            </p>
+        {/* Page Header */}
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 mb-4">
+            <MdLibraryBooks className="text-red-700 dark:text-rose-400" size={16} />
+            <span className="text-xs font-bold text-red-700 dark:text-rose-400 uppercase tracking-wider">Manage Classes</span>
           </div>
-          {!loading && (
-            <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-              {total} class{total !== 1 ? "es" : ""}
-            </span>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">All Classes</h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+                Review, approve, or reject classes submitted by trainers.
+              </p>
+            </div>
+            {!loading && (
+              <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                {total} class{total !== 1 ? "es" : ""}
+              </span>
+            )}
+          </div>
+        </div>
+
+
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Status filter */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Status:</span>
+            {STATUS_FILTERS.map((f) => {
+              const active = statusFilter === f.value;
+              const colorMap = {
+                gray: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+                yellow: active ? "bg-yellow-500 text-white border-yellow-500" : "bg-white dark:bg-white/[0.03] text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30 hover:border-yellow-400",
+                green: active ? "bg-green-600 text-white border-green-600" : "bg-white dark:bg-white/[0.03] text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30 hover:border-green-400",
+                red: active ? "bg-red-600 text-white border-red-600" : "bg-white dark:bg-white/[0.03] text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30 hover:border-red-400",
+              };
+              return (
+                <button
+                  key={f.value}
+                  onClick={() => {
+                    setStatusFilter(f.value);
+                    fetchClasses(1, f.value, visibilityFilter);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.color]}`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08] hidden sm:block" />
+
+          {/* Visibility filter */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Visibility:</span>
+            {VISIBILITY_FILTERS.map((f) => {
+              const active = visibilityFilter === f.value;
+              const colorMap = {
+                all: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
+                open: active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-white/[0.03] text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400",
+                closed: active ? "bg-slate-600 text-white border-slate-600" : "bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/30 hover:border-slate-400",
+              };
+              return (
+                <button
+                  key={f.value}
+                  onClick={() => {
+                    setVisibilityFilter(f.value);
+                    fetchClasses(1, statusFilter, f.value);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.value]}`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Reset */}
+          {(statusFilter !== "all" || visibilityFilter !== "all") && (
+            <button
+              onClick={() => {
+                setStatusFilter("all");
+                setVisibilityFilter("all");
+                fetchClasses(1, "all", "all");
+              }}
+              className="ml-auto text-xs font-bold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors underline underline-offset-2"
+            >
+              Reset filters
+            </button>
+          )}
+        </div>
+
+        {/* Table */}
+        <div className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 dark:border-white/[0.06] bg-gray-50/80 dark:bg-white/[0.02]">
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Class</th>
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Trainer</th>
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Category</th>
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                  <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Visibility</th>
+                  <th className="text-right px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 dark:divide-white/[0.04]">
+                {loading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <TableRowSkeleton key={i} cols={6} />
+                  ))
+                ) : classes.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-16 text-center">
+                      <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">No classes found.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  classes.map((cls) => (
+                    <tr key={cls._id} className="hover:bg-gray-50/60 dark:hover:bg-white/[0.02] transition-colors">
+
+                      {/* Class Name + Image */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          {cls.image ? (
+                            <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1] relative">
+                              <Image src={cls.image} alt={cls.className || "class"} fill sizes="40px" className="object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.05] flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-white/[0.1]">
+                              <MdLibraryBooks className="text-gray-400" size={18} />
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} ${cls.price}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Trainer */}
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || 'none'}</p>
+                      </td>
+
+                      {/* Category */}
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-xs font-medium text-gray-600 dark:text-gray-300">
+                          {cls.category}
+                        </span>
+                      </td>
+
+                      {/* Approval Status */}
+                      <td className="px-6 py-4">
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${isApproved(cls)
+                          ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400"
+                          : isRejected(cls)
+                            ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400"
+                            : "bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400"
+                          }`}>
+                          {isApproved(cls) ? <MdCheckCircle size={13} /> : isRejected(cls) ? <MdCancel size={13} /> : <MdPendingActions size={13} />}
+                          {cls.status || "Pending"}
+                        </div>
+                      </td>
+
+                      {/* Open / Closed Toggle only for Approved classes */}
+                      <td className="px-6 py-4">
+                        {isApproved(cls) ? (
+                          <button
+                            onClick={() => handleAction(cls._id, "toggle-visibility")}
+                            disabled={actionLoading === `${cls._id}-toggle-visibility`}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-60 ${cls.isOpen
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100"
+                              : "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:bg-gray-200"
+                              }`}
+                            title={cls.isOpen ? "Click to Close (hide from users)" : "Click to Open (show to users)"}
+                          >
+                            {cls.isOpen ? <MdLockOpen size={14} /> : <MdLock size={14} />}
+                            {cls.isOpen ? "Open" : "Closed"}
+                          </button>
+                        ) : (
+                          <span className="text-xs text-gray-400 dark:text-gray-600 italic">”</span>
+                        )}
+                      </td>
+
+                      {/* Action Buttons */}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleAction(cls._id, "approve")}
+                            disabled={!!actionLoading || isApproved(cls)}
+                            className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-500/10 transition-colors disabled:opacity-40"
+                            title="Approve"
+                          >
+                            <MdCheckCircle size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleAction(cls._id, "reject")}
+                            disabled={!!actionLoading || isRejected(cls)}
+                            className="p-1.5 rounded-lg text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-40"
+                            title="Reject"
+                          >
+                            <MdCancel size={18} />
+                          </button>
+                          <button
+                            onClick={() => confirmDelete(cls._id)}
+                            disabled={!!actionLoading}
+                            className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                            title="Delete"
+                          >
+                            <MdDelete size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Footer */}
+          {!loading && totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01] flex items-center justify-between">
+              <CustomPagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={total}
+                itemsPerPage={LIMIT}
+                onChange={(p) => { setPage(p); fetchClasses(p); }}
+              />
+            </div>
           )}
         </div>
       </div>
-
-      {/* â”€â”€ Filter Bar â”€â”€ */}
-      <div className="flex flex-wrap gap-4 items-center">
-        {/* Status filter */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Status:</span>
-          {STATUS_FILTERS.map((f) => {
-            const active = statusFilter === f.value;
-            const colorMap = {
-              gray: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
-              yellow: active ? "bg-yellow-500 text-white border-yellow-500" : "bg-white dark:bg-white/[0.03] text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30 hover:border-yellow-400",
-              green: active ? "bg-green-600 text-white border-green-600" : "bg-white dark:bg-white/[0.03] text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/30 hover:border-green-400",
-              red: active ? "bg-red-600 text-white border-red-600" : "bg-white dark:bg-white/[0.03] text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/30 hover:border-red-400",
-            };
-            return (
-              <button
-                key={f.value}
-                onClick={() => {
-                  setStatusFilter(f.value);
-                  fetchClasses(1, f.value, visibilityFilter);
-                }}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.color]}`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08] hidden sm:block" />
-
-        {/* Visibility filter */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-1">Visibility:</span>
-          {VISIBILITY_FILTERS.map((f) => {
-            const active = visibilityFilter === f.value;
-            const colorMap = {
-              all: active ? "bg-gray-700 text-white border-gray-700" : "bg-white dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/[0.1] hover:border-gray-400",
-              open: active ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-white/[0.03] text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 hover:border-emerald-400",
-              closed: active ? "bg-slate-600 text-white border-slate-600" : "bg-white dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/30 hover:border-slate-400",
-            };
-            return (
-              <button
-                key={f.value}
-                onClick={() => {
-                  setVisibilityFilter(f.value);
-                  fetchClasses(1, statusFilter, f.value);
-                }}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all ${colorMap[f.value]}`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Reset */}
-        {(statusFilter !== "all" || visibilityFilter !== "all") && (
-          <button
-            onClick={() => {
-              setStatusFilter("all");
-              setVisibilityFilter("all");
-              fetchClasses(1, "all", "all");
-            }}
-            className="ml-auto text-xs font-bold text-red-500 hover:text-red-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors underline underline-offset-2"
-          >
-            Reset filters
-          </button>
-        )}
-      </div>
-
-      {/* Table */}
-      <div className="bg-white dark:bg-[#120010] border border-gray-100 dark:border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 dark:border-white/[0.06] bg-gray-50/80 dark:bg-white/[0.02]">
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Class</th>
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Trainer</th>
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Category</th>
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
-                <th className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Visibility</th>
-                <th className="text-right px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50 dark:divide-white/[0.04]">
-              {loading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <TableRowSkeleton key={i} cols={6} />
-                ))
-              ) : classes.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
-                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">No classes found.</p>
-                  </td>
-                </tr>
-              ) : (
-                classes.map((cls) => (
-                  <tr key={cls._id} className="hover:bg-gray-50/60 dark:hover:bg-white/[0.02] transition-colors">
-
-                    {/* Class Name + Image */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        {cls.image ? (
-                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/[0.1] relative">
-                            <Image src={cls.image} alt={cls.className || "class"} fill sizes="40px" className="object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.05] flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-white/[0.1]">
-                            <MdLibraryBooks className="text-gray-400" size={18} />
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-sm font-bold text-gray-900 dark:text-white">{cls.className || cls.name}</p>
-                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{cls.duration} ${cls.price}</p>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Trainer */}
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-gray-700 dark:text-gray-300 max-w-[150px] truncate">{cls.trainerEmail || 'none'}</p>
-                    </td>
-
-                    {/* Category */}
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.1] text-xs font-medium text-gray-600 dark:text-gray-300">
-                        {cls.category}
-                      </span>
-                    </td>
-
-                    {/* Approval Status */}
-                    <td className="px-6 py-4">
-                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${isApproved(cls)
-                        ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400"
-                        : isRejected(cls)
-                          ? "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400"
-                          : "bg-yellow-50 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20 text-yellow-700 dark:text-yellow-400"
-                        }`}>
-                        {isApproved(cls) ? <MdCheckCircle size={13} /> : isRejected(cls) ? <MdCancel size={13} /> : <MdPendingActions size={13} />}
-                        {cls.status || "Pending"}
-                      </div>
-                    </td>
-
-                    {/* Open / Closed Toggle â€” only for Approved classes */}
-                    <td className="px-6 py-4">
-                      {isApproved(cls) ? (
-                        <button
-                          onClick={() => handleAction(cls._id, "toggle-visibility")}
-                          disabled={actionLoading === `${cls._id}-toggle-visibility`}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-60 ${cls.isOpen
-                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100"
-                            : "bg-gray-100 dark:bg-white/[0.04] border-gray-200 dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:bg-gray-200"
-                            }`}
-                          title={cls.isOpen ? "Click to Close (hide from users)" : "Click to Open (show to users)"}
-                        >
-                          {cls.isOpen ? <MdLockOpen size={14} /> : <MdLock size={14} />}
-                          {cls.isOpen ? "Open" : "Closed"}
-                        </button>
-                      ) : (
-                        <span className="text-xs text-gray-400 dark:text-gray-600 italic">”</span>
-                      )}
-                    </td>
-
-                    {/* Action Buttons */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleAction(cls._id, "approve")}
-                          disabled={!!actionLoading || isApproved(cls)}
-                          className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-500/10 transition-colors disabled:opacity-40"
-                          title="Approve"
-                        >
-                          <MdCheckCircle size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleAction(cls._id, "reject")}
-                          disabled={!!actionLoading || isRejected(cls)}
-                          className="p-1.5 rounded-lg text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-40"
-                          title="Reject"
-                        >
-                          <MdCancel size={18} />
-                        </button>
-                        <button
-                          onClick={() => confirmDelete(cls._id)}
-                          disabled={!!actionLoading}
-                          className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
-                          title="Delete"
-                        >
-                          <MdDelete size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination Footer */}
-        {!loading && totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-100 dark:border-white/[0.05] bg-gray-50/50 dark:bg-white/[0.01] flex items-center justify-between">
-            <CustomPagination
-              page={page}
-              totalPages={totalPages}
-              totalItems={total}
-              itemsPerPage={LIMIT}
-              onChange={(p) => { setPage(p); fetchClasses(p); }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
     </>
   );
 }

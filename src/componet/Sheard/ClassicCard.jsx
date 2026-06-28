@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Heart, Clock, Zap, Flame, Activity, User, CalendarDays, ArrowUpRight } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
+import { toast } from '@heroui/react';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -35,13 +36,13 @@ export const ClassCard = ({ cls }) => {
     e.preventDefault();
     e.stopPropagation();
     if (!session?.user) {
-      alert("Please log in to save favorites.");
+      toast.error("Please log in to save favorites.");
       return;
     }
-    
+
     // Optimistic UI update
     setIsFavorited(!isFavorited);
-    
+
     try {
       await fetchSecure(`/api/favorites/toggle`, {
         method: "POST",

@@ -5,6 +5,7 @@ import fetchSecure from '../../../../lib/fetchSecure';
 import { useSession } from "@/lib/auth-client";
 import { Loader2, Trash2, MessageSquare, AlertCircle } from "lucide-react";
 import { CardSkeleton } from "@/componet/Sheard/Skeleton";
+import { toast } from "@heroui/react";
 
 export default function MyForumPostsPage() {
   const { data: session } = useSession();
@@ -55,11 +56,11 @@ export default function MyForumPostsPage() {
       if (res.ok) {
         setPosts(posts.filter((post) => post._id !== postId));
       } else {
-        alert("Failed to delete the post.");
+        toast.error("Failed to delete the post.");
       }
     } catch (error) {
       console.error("Error deleting post:", error);
-      alert("Something went wrong while deleting.");
+      toast.error("Something went wrong while deleting.");
     } finally {
       setDeleteLoading(null);
     }

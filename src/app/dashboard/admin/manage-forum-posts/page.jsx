@@ -110,9 +110,8 @@ function AuthorModal({ post, onClose }) {
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs text-gray-400">Post Status</span>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white ${
-              post.status === "Approved" ? "bg-emerald-500" : post.status === "Rejected" ? "bg-red-500" : "bg-amber-500"
-            }`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white ${post.status === "Approved" ? "bg-emerald-500" : post.status === "Rejected" ? "bg-red-500" : "bg-amber-500"
+              }`}>
               {post.status || "Pending"}
             </span>
           </div>
@@ -323,14 +322,13 @@ export default function ManageForumPostsPage() {
               <button
                 key={tab.value}
                 onClick={() => setStatusTab(tab.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all ${
-                  statusTab === tab.value
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all ${statusTab === tab.value
                     ? tab.value === "Approved" ? "bg-emerald-600 text-white border-emerald-600"
                       : tab.value === "Rejected" ? "bg-red-600 text-white border-red-600"
-                      : tab.value === "Pending" ? "bg-amber-500 text-white border-amber-500"
-                      : "bg-gray-700 text-white border-gray-700"
+                        : tab.value === "Pending" ? "bg-amber-500 text-white border-amber-500"
+                          : "bg-gray-700 text-white border-gray-700"
                     : "bg-gray-50 dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-gray-400"
-                }`}
+                  }`}
               >
                 {tab.label} ({statusCounts[tab.value]})
               </button>
@@ -373,9 +371,8 @@ export default function ManageForumPostsPage() {
                           <div className="max-w-[280px]">
                             <div className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1 mb-1">
                               {post.title || "Untitled"}
-                              <span className={`ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider text-white ${
-                                post.status === "Approved" ? "bg-emerald-500" : post.status === "Rejected" ? "bg-red-500" : "bg-amber-500"
-                              }`}>
+                              <span className={`ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider text-white ${post.status === "Approved" ? "bg-emerald-500" : post.status === "Rejected" ? "bg-red-500" : "bg-amber-500"
+                                }`}>
                                 {post.status || "Pending"}
                               </span>
                             </div>

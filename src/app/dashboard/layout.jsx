@@ -8,7 +8,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-const DashboardLayout = ({children}) => {
+const DashboardLayout = ({ children }) => {
     const { data: session, isPending } = authClient.useSession();
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
@@ -16,7 +16,7 @@ const DashboardLayout = ({children}) => {
     useEffect(() => {
         const checkStatus = async () => {
             if (isPending) return;
-            
+
             if (!session?.user) {
                 router.push('/');
                 return;
@@ -31,7 +31,7 @@ const DashboardLayout = ({children}) => {
                         // User is blocked, kick them out to home
                         router.push('/');
                         setTimeout(() => {
-                           alert("Your account has been restricted by an Admin. You cannot access the dashboard.");
+                            toast.error("Your account has been restricted by an Admin. You cannot access the dashboard.");
                         }, 500);
                         return;
                     }
@@ -39,7 +39,7 @@ const DashboardLayout = ({children}) => {
             } catch (err) {
                 console.error("Failed to check status", err);
             }
-            
+
             setIsChecking(false);
         };
 

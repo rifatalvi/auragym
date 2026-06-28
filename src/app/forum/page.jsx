@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, ThumbsUp, Clock, Tag, ArrowRight } from 'lucide-react';
+import { MessageSquare, Clock, Calendar, Heart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CommunityForumPage() {
@@ -65,51 +65,87 @@ export default function CommunityForumPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="group flex flex-col bg-white dark:bg-gray-900 rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-indigo-500/10 hover:border-indigo-500/30 transition-all duration-300"
+                className="group flex flex-col bg-white dark:bg-[#16161a] rounded-2xl overflow-hidden border border-gray-100 dark:border-white/[0.05] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="relative h-48 overflow-hidden shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent z-10" />
+                {/* Image Section */}
+                <div className="relative h-56 overflow-hidden">
                   <img 
                     src={post.image || getImage(post.category)} 
                     alt={post.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-4 left-4 z-20 flex gap-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/30">
-                      {post.category || 'Motivation'}
+                  {/* Category Badge over image */}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-4 py-1.5 rounded-full text-sm font-bold bg-white text-gray-900 shadow-md lowercase tracking-wide">
+                      {post.category || 'motivation'}
                     </span>
                   </div>
                 </div>
 
+                {/* Content Section */}
                 <div className="flex flex-col flex-grow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-indigo-400 transition-colors">
+                  {/* Meta (Read time & Date) */}
+                  <div className="flex items-center gap-4 text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3">
+                    <span className="flex items-center gap-1.5 text-emerald-500">
+                      <Clock size={14} /> 15 read
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Calendar size={14} /> {new Date(post.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-3 line-clamp-2 leading-tight">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 line-clamp-3">
-                    {post.content || post.description || "No description"}
+
+                  {/* Description */}
+                  <p className="text-slate-500 dark:text-slate-400 text-sm mb-5 line-clamp-2 leading-relaxed">
+                    {post.content || post.description || "No description provided."}
                   </p>
                   
-                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white font-bold text-xs">
-                          {(post.author || post.authorName || 'A').charAt(0).toUpperCase()}
-                        </div>
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[100px]">{post.author || post.authorName || 'Anonymous'}</span>
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                     <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">gym</span>
+                     <span className="px-4 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs font-semibold text-slate-600 dark:text-slate-300">fitness</span>
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-white/5 my-4" />
+
+                  {/* Footer / Author Row */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                        {(post.author || post.authorName || 'A').charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        <Clock size={12} />
-                        {new Date(post.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-[15px] font-bold text-slate-900 dark:text-slate-100">{post.author || post.authorName || 'Anonymous'}</span>
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 w-fit mt-0.5 lowercase tracking-wider">
+                          {post.role?.toLowerCase() === 'admin' ? 'admin' : (post.role?.toLowerCase() === 'trainer' ? 'trainer' : 'member')}
+                        </span>
+                      </div>
                     </div>
 
-                    <Link href={`/forum/${post._id}`}>
-                      <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-indigo-500 dark:text-indigo-400 font-semibold text-sm group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-300">
-                        Read More
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    </Link>
+                    {/* Stats */}
+                    <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                      <div className="flex items-center gap-1.5">
+                        <Heart size={15} className="text-emerald-500 fill-emerald-500" />
+                        <span>{post.upvotes || 0}</span>
+                      </div>
+                      <div className="w-px h-3 bg-gray-300 dark:bg-gray-600" />
+                      <div className="flex items-center gap-1.5">
+                        <MessageSquare size={15} className="text-slate-400 fill-slate-400" />
+                        <span>{post.commentCount || 0}</span>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Read More Button */}
+                  <Link href={`/forum/${post._id}`} className="mt-auto block">
+                    <button className="w-full flex items-center justify-center py-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors duration-300">
+                      Read More
+                    </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

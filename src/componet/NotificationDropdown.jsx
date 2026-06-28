@@ -39,26 +39,6 @@ export default function NotificationDropdown() {
   useEffect(() => {
     fetchNotifications();
     
-    // Check if we need to send a welcome notification
-    if (session?.user?.email) {
-      const welcomedKey = `welcomed_${session.user.email}`;
-      if (!localStorage.getItem(welcomedKey)) {
-        // Send welcome notification
-        fetchSecure(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: session.user.email,
-            type: "welcome",
-            message: `Welcome to AuraGym, ${session.user.name || 'User'}!`
-          })
-        }).then(() => {
-          localStorage.setItem(welcomedKey, "true");
-          fetchNotifications(); // Refresh notifications
-        }).catch(err => console.error(err));
-      }
-    }
-
     // Optional: Set up polling or listen to events
     const interval = setInterval(fetchNotifications, 60000); // Check every minute
     return () => clearInterval(interval);

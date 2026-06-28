@@ -3,7 +3,7 @@
 import { useEffect, useState, use, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft, MessageSquare, Clock, Tag, Heart,
+  ArrowLeft, MessageSquare, Clock, Tag, Heart, ThumbsDown,
   MoreVertical, Reply, Pencil, Trash2, X, Send,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -257,6 +257,11 @@ export default function PostDetailsPage({ params }) {
   const [likeLoading, setLikeLoading] = useState(false);
   const [showLoginHint, setShowLoginHint] = useState(false);
 
+  // Dislike
+  const [disliked, setDisliked] = useState(false);
+  const [dislikeCount, setDislikeCount] = useState(0);
+  const [dislikeLoading, setDislikeLoading] = useState(false);
+
   // Comments
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(true);
@@ -295,8 +300,12 @@ export default function PostDetailsPage({ params }) {
       .then((data) => {
         setPost(data);
         setLikeCount(data.upvotes ?? 0);
+        setDislikeCount(data.downvotes ?? 0);
         if (userEmail && Array.isArray(data.likedBy)) {
           setLiked(data.likedBy.includes(userEmail));
+        }
+        if (userEmail && Array.isArray(data.dislikedBy)) {
+          setDisliked(data.dislikedBy.includes(userEmail));
         }
         setLoading(false);
       })
@@ -326,13 +335,56 @@ export default function PostDetailsPage({ params }) {
     const wasLiked = liked;
     setLiked(!wasLiked);
     setLikeCount((p) => wasLiked ? p - 1 : p + 1);
+
+    if (disliked && !wasLiked) {
+      setDisliked(false);
+      setDislikeCount((p) => p - 1);
+    }
+
     setLikeLoading(true);
     try {
       const r = await fetchSecure(`/api/forum/${postId}/like`, { method: 'PATCH' });
-      if (r.ok) { const d = await r.json(); setLiked(d.liked); setLikeCount(d.upvotes); }
+      if (r.ok) { 
+        const d = await r.json(); 
+        setLiked(d.liked); 
+        setLikeCount(d.upvotes); 
+        if (d.disliked !== undefined) setDisliked(d.disliked);
+        if (d.downvotes !== undefined) setDislikeCount(d.downvotes);
+      }
       else { setLiked(wasLiked); setLikeCount((p) => wasLiked ? p + 1 : p - 1); }
     } catch { setLiked(wasLiked); setLikeCount((p) => wasLiked ? p + 1 : p - 1); }
     finally { setLikeLoading(false); }
+  };
+
+  const handleDislike = async () => {
+    if (!session?.user) {
+      setShowLoginHint(true);
+      setTimeout(() => setShowLoginHint(false), 2500);
+      return;
+    }
+    if (dislikeLoading) return;
+    const wasDisliked = disliked;
+    setDisliked(!wasDisliked);
+    setDislikeCount((p) => wasDisliked ? p - 1 : p + 1);
+
+    if (liked && !wasDisliked) {
+      setLiked(false);
+      setLikeCount((p) => p - 1);
+    }
+
+    setDislikeLoading(true);
+    try {
+      const r = await fetchSecure(`/api/forum/${postId}/dislike`, { method: 'PATCH' });
+      if (r.ok) { 
+        const d = await r.json(); 
+        setDisliked(d.disliked); 
+        setDislikeCount(d.downvotes);
+        if (d.liked !== undefined) setLiked(d.liked);
+        if (d.upvotes !== undefined) setLikeCount(d.upvotes);
+      }
+      else { setDisliked(wasDisliked); setDislikeCount((p) => wasDisliked ? p + 1 : p - 1); }
+    } catch { setDisliked(wasDisliked); setDislikeCount((p) => wasDisliked ? p + 1 : p - 1); }
+    finally { setDislikeLoading(false); }
   };
 
   // Post comment
@@ -480,21 +532,21 @@ export default function PostDetailsPage({ params }) {
             <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between flex-wrap gap-4">
               <div className="flex gap-4 items-center">
 
-                {/* Like */}
-                <div className="relative">
+                {/* Like / Dislike Group */}
+                <div className="relative flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 p-1.5 rounded-xl border border-gray-100 dark:border-gray-800">
                   <motion.button
                     id="like-button"
                     onClick={handleLike}
                     whileTap={{ scale: 0.9 }}
                     disabled={likeLoading}
-                    className={`flex items-center gap-2.5 px-6 py-3 rounded-xl font-semibold transition-all duration-200 select-none
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg font-semibold transition-all duration-200 select-none
                       ${liked ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30 hover:bg-pink-600'
                               : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-500 dark:hover:text-pink-400'}
                       ${likeLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     <AnimatePresence mode="wait">
                       <motion.span key={liked ? 'l' : 'u'} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.15 }}>
-                        <Heart size={20} className={liked ? 'fill-white' : ''} />
+                        <Heart size={18} className={liked ? 'fill-white' : ''} />
                       </motion.span>
                     </AnimatePresence>
                     <AnimatePresence mode="wait">
@@ -503,6 +555,29 @@ export default function PostDetailsPage({ params }) {
                       </motion.span>
                     </AnimatePresence>
                     <span>{liked ? 'Liked' : 'Like'}</span>
+                  </motion.button>
+
+                  <motion.button
+                    id="dislike-button"
+                    onClick={handleDislike}
+                    whileTap={{ scale: 0.9 }}
+                    disabled={dislikeLoading}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg font-semibold transition-all duration-200 select-none
+                      ${disliked ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 hover:bg-rose-600'
+                              : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400'}
+                      ${dislikeLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.span key={disliked ? 'd1' : 'd0'} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.15 }}>
+                        <ThumbsDown size={18} className={disliked ? 'fill-white' : ''} />
+                      </motion.span>
+                    </AnimatePresence>
+                    <AnimatePresence mode="wait">
+                      <motion.span key={dislikeCount} initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 8, opacity: 0 }} transition={{ duration: 0.15 }} className="min-w-[1.5rem] text-center tabular-nums">
+                        {dislikeCount}
+                      </motion.span>
+                    </AnimatePresence>
+                    <span>{disliked ? 'Disliked' : 'Dislike'}</span>
                   </motion.button>
 
                   <AnimatePresence>
@@ -516,8 +591,8 @@ export default function PostDetailsPage({ params }) {
                 </div>
 
                 {/* Comment count */}
-                <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-500 transition-colors">
-                  <MessageSquare size={20} />
+                <button className="flex items-center gap-2 px-5 py-2.5 text-sm rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-500 transition-colors border border-gray-100 dark:border-gray-800">
+                  <MessageSquare size={18} />
                   <span>{totalCount} Comment{totalCount !== 1 ? 's' : ''}</span>
                 </button>
               </div>

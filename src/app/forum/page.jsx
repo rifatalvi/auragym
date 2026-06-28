@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, Clock, Calendar, Heart } from 'lucide-react';
+import { MessageSquare, Clock, Calendar, Heart, ThumbsDown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CommunityForumPage() {
@@ -131,6 +131,11 @@ export default function CommunityForumPage() {
                       <div className="flex items-center gap-1.5">
                         <Heart size={15} className="text-emerald-500 fill-emerald-500" />
                         <span>{post.upvotes || 0}</span>
+                      </div>
+                      <div className="w-px h-3 bg-gray-300 dark:bg-gray-600" />
+                      <div className="flex items-center gap-1.5">
+                        <ThumbsDown size={15} className="text-rose-500 fill-rose-500" />
+                        <span>{post.downvotes || 0}</span>
                       </div>
                       <div className="w-px h-3 bg-gray-300 dark:bg-gray-600" />
                       <div className="flex items-center gap-1.5">
